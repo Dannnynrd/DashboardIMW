@@ -17,7 +17,17 @@ import {
     Bot, Brain, Lightbulb, Trophy, Medal, Crown, Gem, Wallet,
     Calculator, Printer, QrCode, Scan, WifiOff, Battery, BatteryLow,
     Volume2, VolumeX, Mic, Video, Headphones, Monitor, Tablet, Watch,
-    CloudRain, CloudSnow, Wind, Droplets, Thermometer, Sunrise, Sunset
+    CloudRain, CloudSnow, Wind, Droplets, Thermometer, Sunrise, Sunset,
+    Brush, Droplet, Sparkle, CircleDollarSign,
+    MessageCircle, ThumbsUp, AlertOctagon, CheckSquare, Square, MoreVertical,
+    Tag, Bookmark, Clock3, Clock4, Clock5,
+    Euro, Hash, BarChart4,
+    FileBarChart, FileSpreadsheet, Folder, FolderOpen, File,
+    Coins, HandCoins, PiggyBank,
+    ShoppingBag, Store, Package2, Truck, PackageCheck,
+    UserCircle, UserCog, UserMinus, UsersRound, Contact,
+    CalendarCheck, CalendarClock, CalendarX, CalendarRange,
+    BellRing, BellOff, BellPlus, Megaphone, Radio
 } from 'lucide-react';
 
 // Enhanced Glass Card Component with depth variations
@@ -168,6 +178,7 @@ const AdvancedChart = ({ type = 'line', data, labels, dark, height = 200 }) => {
 
     useEffect(() => {
         const canvas = canvasRef.current;
+        if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const width = canvas.width;
         const height = canvas.height;
@@ -189,7 +200,7 @@ const AdvancedChart = ({ type = 'line', data, labels, dark, height = 200 }) => {
         }
 
         // Draw data
-        if (type === 'line') {
+        if (type === 'line' && data && data.length > 0) {
             const gradient = ctx.createLinearGradient(0, 0, 0, height);
             gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
             gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
@@ -576,13 +587,13 @@ const MyPerformance = ({ dark }) => {
 const AppointmentsView = ({ dark }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [viewMode, setViewMode] = useState('day'); // day, week, month
-
-    const appointments = [
-        { id: 1, time: '09:00', duration: 2, client: 'Anna Müller', service: 'Färben & Schnitt', price: 120, status: 'confirmed', phone: '0170-1234567' },
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [appointments, setAppointments] = useState([
+        { id: 1, time: '09:00', duration: 2, client: 'Anna Müller', service: 'Färben & Schnitt', price: 120, status: 'confirmed', phone: '0170-1234567', notes: 'Bevorzugt Naturfarben' },
         { id: 2, time: '11:30', duration: 1, client: 'Max Schmidt', service: 'Herrenschnitt', price: 35, status: 'confirmed', phone: '0171-2345678' },
-        { id: 3, time: '14:00', duration: 1.5, client: 'Julia Weber', service: 'Styling', price: 65, status: 'pending', phone: '0172-3456789' },
+        { id: 3, time: '14:00', duration: 1.5, client: 'Julia Weber', service: 'Styling', price: 65, status: 'pending', phone: '0172-3456789', notes: 'Hochzeitsfrisur' },
         { id: 4, time: '16:00', duration: 1, client: 'Thomas Klein', service: 'Bartpflege', price: 45, status: 'confirmed', phone: '0173-4567890' }
-    ];
+    ]);
 
     return (
         <div className="space-y-6">
@@ -624,12 +635,14 @@ const AppointmentsView = ({ dark }) => {
                             Monat
                         </button>
                     </div>
-                    <button className={`
+                    <button
+                        onClick={() => setShowAddModal(true)}
+                        className={`
                         px-4 py-2 rounded-lg font-medium transition-all
                         ${dark
-                        ? 'bg-white text-black hover:bg-gray-100'
-                        : 'bg-black text-white hover:bg-gray-900'
-                    }
+                            ? 'bg-white text-black hover:bg-gray-100'
+                            : 'bg-black text-white hover:bg-gray-900'
+                        }
                     `}>
                         <Plus className="w-4 h-4 inline mr-2" />
                         Neuer Termin
@@ -734,6 +747,14 @@ const AppointmentsView = ({ dark }) => {
                                                         {appointment.phone}
                                                     </span>
                                                 </div>
+                                                {appointment.notes && (
+                                                    <div className="flex items-center space-x-1">
+                                                        <FileText className={`w-3 h-3 ${dark ? 'text-white/40' : 'text-gray-400'}`} />
+                                                        <span className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                                            {appointment.notes}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="text-right">
@@ -963,6 +984,912 @@ const DaySchedule = ({ dark }) => {
     );
 };
 
+// Customer List Component
+const CustomerList = ({ dark }) => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+    const customers = [
+        { id: 1, name: 'Anna Müller', phone: '0170-1234567', visits: 24, totalSpent: 2890, lastVisit: '12.06.2024', rating: 5, favorite: true },
+        { id: 2, name: 'Max Schmidt', phone: '0171-2345678', visits: 18, totalSpent: 630, lastVisit: '10.06.2024', rating: 5 },
+        { id: 3, name: 'Julia Weber', phone: '0172-3456789', visits: 12, totalSpent: 1450, lastVisit: '08.06.2024', rating: 4.5 },
+        { id: 4, name: 'Thomas Klein', phone: '0173-4567890', visits: 36, totalSpent: 3240, lastVisit: '14.06.2024', rating: 5, favorite: true },
+        { id: 5, name: 'Sarah Becker', phone: '0174-5678901', visits: 8, totalSpent: 560, lastVisit: '05.06.2024', rating: 4 }
+    ];
+
+    const filteredCustomers = customers.filter(customer =>
+        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        customer.phone.includes(searchTerm)
+    );
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h2 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                    Kundenverwaltung
+                </h2>
+                <button className={`
+                    px-4 py-2 rounded-lg font-medium transition-all
+                    ${dark
+                    ? 'bg-white text-black hover:bg-gray-100'
+                    : 'bg-black text-white hover:bg-gray-900'
+                }
+                `}>
+                    <UserPlus className="w-4 h-4 inline mr-2" />
+                    Neuer Kunde
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Customer List */}
+                <div className="lg:col-span-2">
+                    <GlassCard dark={dark}>
+                        <div className="mb-4">
+                            <div className="relative">
+                                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
+                                    dark ? 'text-white/40' : 'text-gray-400'
+                                }`} />
+                                <input
+                                    type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    placeholder="Kunde suchen..."
+                                    className={`w-full pl-10 pr-4 py-2 rounded-lg ${
+                                        dark
+                                            ? 'bg-white/5 border-white/10 text-white placeholder-white/40'
+                                            : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400'
+                                    } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            {filteredCustomers.map((customer) => (
+                                <div
+                                    key={customer.id}
+                                    onClick={() => setSelectedCustomer(customer)}
+                                    className={`
+                                        p-4 rounded-lg border cursor-pointer transition-all
+                                        ${selectedCustomer?.id === customer.id
+                                        ? dark
+                                            ? 'bg-blue-500/20 border-blue-500/40'
+                                            : 'bg-blue-50 border-blue-300'
+                                        : dark
+                                            ? 'bg-white/5 border-white/10 hover:bg-white/10'
+                                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                    }
+                                    `}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center space-x-3">
+                                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-medium ${
+                                                dark ? 'bg-white/10 text-white' : 'bg-gray-200 text-gray-700'
+                                            }`}>
+                                                {customer.name.split(' ').map(n => n[0]).join('')}
+                                            </div>
+                                            <div>
+                                                <p className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                                    {customer.name}
+                                                </p>
+                                                <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                                    {customer.phone}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-4">
+                                            {customer.favorite && (
+                                                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                            )}
+                                            <div className="text-right">
+                                                <p className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                                    €{customer.totalSpent}
+                                                </p>
+                                                <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                                    {customer.visits} Besuche
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </GlassCard>
+                </div>
+
+                {/* Customer Details */}
+                <GlassCard dark={dark}>
+                    {selectedCustomer ? (
+                        <>
+                            <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                                Kundendetails
+                            </h3>
+
+                            <div className="space-y-4">
+                                <div className={`text-center p-4 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl font-medium mx-auto mb-3 ${
+                                        dark ? 'bg-white/10 text-white' : 'bg-gray-200 text-gray-700'
+                                    }`}>
+                                        {selectedCustomer.name.split(' ').map(n => n[0]).join('')}
+                                    </div>
+                                    <p className={`font-semibold text-lg ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        {selectedCustomer.name}
+                                    </p>
+                                    <div className="flex items-center justify-center space-x-1 mt-2">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className={`w-4 h-4 ${
+                                                    i < Math.floor(selectedCustomer.rating)
+                                                        ? 'text-yellow-500 fill-yellow-500'
+                                                        : 'text-gray-300'
+                                                }`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex justify-between">
+                                        <span className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                            Telefon
+                                        </span>
+                                        <span className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                            {selectedCustomer.phone}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                            Besuche
+                                        </span>
+                                        <span className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                            {selectedCustomer.visits}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                            Ausgegeben
+                                        </span>
+                                        <span className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                            €{selectedCustomer.totalSpent}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                            Letzter Besuch
+                                        </span>
+                                        <span className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                            {selectedCustomer.lastVisit}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 space-y-2">
+                                    <button className={`w-full py-2 rounded-lg ${
+                                        dark
+                                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                            : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                    } transition-colors`}>
+                                        <Calendar className="w-4 h-4 inline mr-2" />
+                                        Termin buchen
+                                    </button>
+                                    <button className={`w-full py-2 rounded-lg border ${
+                                        dark
+                                            ? 'border-white/20 text-white hover:bg-white/10'
+                                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                                    } transition-colors`}>
+                                        <MessageSquare className="w-4 h-4 inline mr-2" />
+                                        Nachricht senden
+                                    </button>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className={`text-center py-12 ${dark ? 'text-white/40' : 'text-gray-400'}`}>
+                            <Users className="w-12 h-12 mx-auto mb-4" />
+                            <p>Kunde auswählen für Details</p>
+                        </div>
+                    )}
+                </GlassCard>
+            </div>
+        </div>
+    );
+};
+
+// Services Management Component
+const ServicesManagement = ({ dark }) => {
+    const [services, setServices] = useState([
+        { id: 1, name: 'Herrenschnitt', duration: 30, price: 35, category: 'Schnitt' },
+        { id: 2, name: 'Damenschnitt', duration: 45, price: 55, category: 'Schnitt' },
+        { id: 3, name: 'Färben (kurz)', duration: 90, price: 65, category: 'Farbe' },
+        { id: 4, name: 'Färben (lang)', duration: 120, price: 95, category: 'Farbe' },
+        { id: 5, name: 'Strähnen', duration: 120, price: 85, category: 'Farbe' },
+        { id: 6, name: 'Bartpflege', duration: 30, price: 25, category: 'Bart' },
+        { id: 7, name: 'Hochzeitsfrisur', duration: 90, price: 120, category: 'Styling' },
+        { id: 8, name: 'Dauerwelle', duration: 150, price: 110, category: 'Behandlung' }
+    ]);
+
+    const categories = [...new Set(services.map(s => s.category))];
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h2 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                    Service-Verwaltung
+                </h2>
+                <button className={`
+                    px-4 py-2 rounded-lg font-medium transition-all
+                    ${dark
+                    ? 'bg-white text-black hover:bg-gray-100'
+                    : 'bg-black text-white hover:bg-gray-900'
+                }
+                `}>
+                    <Plus className="w-4 h-4 inline mr-2" />
+                    Neuer Service
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Service Categories */}
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Kategorien
+                    </h3>
+                    <div className="space-y-2">
+                        <button className={`w-full text-left px-3 py-2 rounded-lg ${
+                            dark ? 'bg-blue-500/20 text-white' : 'bg-blue-50 text-blue-900'
+                        }`}>
+                            Alle Services ({services.length})
+                        </button>
+                        {categories.map(category => (
+                            <button
+                                key={category}
+                                className={`w-full text-left px-3 py-2 rounded-lg ${
+                                    dark
+                                        ? 'hover:bg-white/10 text-white/80'
+                                        : 'hover:bg-gray-100 text-gray-700'
+                                } transition-colors`}
+                            >
+                                {category} ({services.filter(s => s.category === category).length})
+                            </button>
+                        ))}
+                    </div>
+                </GlassCard>
+
+                {/* Services List */}
+                <div className="lg:col-span-3">
+                    <GlassCard dark={dark}>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead>
+                                <tr className={`border-b ${dark ? 'border-white/10' : 'border-gray-200'}`}>
+                                    <th className={`text-left py-3 px-4 text-sm font-medium ${
+                                        dark ? 'text-white/60' : 'text-gray-600'
+                                    }`}>Service</th>
+                                    <th className={`text-left py-3 px-4 text-sm font-medium ${
+                                        dark ? 'text-white/60' : 'text-gray-600'
+                                    }`}>Kategorie</th>
+                                    <th className={`text-left py-3 px-4 text-sm font-medium ${
+                                        dark ? 'text-white/60' : 'text-gray-600'
+                                    }`}>Dauer</th>
+                                    <th className={`text-left py-3 px-4 text-sm font-medium ${
+                                        dark ? 'text-white/60' : 'text-gray-600'
+                                    }`}>Preis</th>
+                                    <th className={`text-right py-3 px-4 text-sm font-medium ${
+                                        dark ? 'text-white/60' : 'text-gray-600'
+                                    }`}>Aktionen</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {services.map((service) => (
+                                    <tr
+                                        key={service.id}
+                                        className={`border-b ${
+                                            dark ? 'border-white/5 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'
+                                        } transition-colors`}
+                                    >
+                                        <td className={`py-3 px-4 ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                            {service.name}
+                                        </td>
+                                        <td className={`py-3 px-4 ${dark ? 'text-white/80' : 'text-gray-700'}`}>
+                                                <span className={`px-2 py-1 text-xs rounded-full ${
+                                                    dark ? 'bg-white/10' : 'bg-gray-100'
+                                                }`}>
+                                                    {service.category}
+                                                </span>
+                                        </td>
+                                        <td className={`py-3 px-4 ${dark ? 'text-white/80' : 'text-gray-700'}`}>
+                                            {service.duration} Min
+                                        </td>
+                                        <td className={`py-3 px-4 font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                            €{service.price}
+                                        </td>
+                                        <td className="py-3 px-4 text-right">
+                                            <button className={`p-1 rounded ${
+                                                dark ? 'hover:bg-white/10' : 'hover:bg-gray-200'
+                                            } mr-1`}>
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button className={`p-1 rounded ${
+                                                dark ? 'hover:bg-white/10' : 'hover:bg-gray-200'
+                                            }`}>
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </GlassCard>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Analytics Dashboard Component
+const AnalyticsDashboard = ({ dark }) => {
+    const [timeRange, setTimeRange] = useState('month');
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h2 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                    Analytics & Insights
+                </h2>
+                <div className={`flex p-1 ${dark ? 'bg-white/10' : 'bg-gray-100'} rounded-lg`}>
+                    <button
+                        onClick={() => setTimeRange('week')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                            timeRange === 'week'
+                                ? dark ? 'bg-white text-black' : 'bg-white text-gray-900 shadow-sm'
+                                : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                    >
+                        Woche
+                    </button>
+                    <button
+                        onClick={() => setTimeRange('month')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                            timeRange === 'month'
+                                ? dark ? 'bg-white text-black' : 'bg-white text-gray-900 shadow-sm'
+                                : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                    >
+                        Monat
+                    </button>
+                    <button
+                        onClick={() => setTimeRange('year')}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                            timeRange === 'year'
+                                ? dark ? 'bg-white text-black' : 'bg-white text-gray-900 shadow-sm'
+                                : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                    >
+                        Jahr
+                    </button>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Revenue Trends */}
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Umsatzentwicklung
+                    </h3>
+                    <div className={`p-4 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                        <AdvancedChart
+                            type="line"
+                            data={[18000, 19500, 21000, 20500, 22100, 24580, 23900, 25200]}
+                            labels={['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug']}
+                            dark={dark}
+                            height={200}
+                        />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 mt-4">
+                        <div className="text-center">
+                            <p className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                €24.6k
+                            </p>
+                            <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                Aktueller Monat
+                            </p>
+                        </div>
+                        <div className="text-center">
+                            <p className={`text-2xl font-bold text-green-500`}>
+                                +12.5%
+                            </p>
+                            <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                Wachstum
+                            </p>
+                        </div>
+                        <div className="text-center">
+                            <p className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                €295k
+                            </p>
+                            <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                Jahresumsatz
+                            </p>
+                        </div>
+                    </div>
+                </GlassCard>
+
+                {/* Service Performance */}
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Top Services
+                    </h3>
+                    <div className="space-y-3">
+                        {[
+                            { name: 'Färben & Schnitt', bookings: 156, revenue: 18720, trend: 12 },
+                            { name: 'Herrenschnitt', bookings: 243, revenue: 8505, trend: -3 },
+                            { name: 'Hochzeitsfrisur', bookings: 28, revenue: 3360, trend: 45 },
+                            { name: 'Strähnen', bookings: 89, revenue: 7565, trend: 8 },
+                            { name: 'Bartpflege', bookings: 124, revenue: 3100, trend: 22 }
+                        ].map((service, idx) => (
+                            <div key={idx} className={`p-3 rounded-lg ${
+                                dark ? 'bg-white/5' : 'bg-gray-50'
+                            }`}>
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        {service.name}
+                                    </span>
+                                    <div className={`flex items-center space-x-1 text-sm ${
+                                        service.trend > 0 ? 'text-green-500' : 'text-red-500'
+                                    }`}>
+                                        {service.trend > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                                        <span>{Math.abs(service.trend)}%</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between text-sm">
+                                    <span className={`${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                        {service.bookings} Buchungen
+                                    </span>
+                                    <span className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        €{service.revenue}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </GlassCard>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Customer Insights */}
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Kundenstatistiken
+                    </h3>
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <span className={`${dark ? 'text-white/60' : 'text-gray-600'}`}>Neue Kunden</span>
+                            <span className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>+23 diese Woche</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className={`${dark ? 'text-white/60' : 'text-gray-600'}`}>Wiederkehrrate</span>
+                            <span className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>89%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className={`${dark ? 'text-white/60' : 'text-gray-600'}`}>Durchschn. Ausgaben</span>
+                            <span className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>€75</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className={`${dark ? 'text-white/60' : 'text-gray-600'}`}>Lifetime Value</span>
+                            <span className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>€890</span>
+                        </div>
+                    </div>
+                </GlassCard>
+
+                {/* Busy Hours */}
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Stoßzeiten
+                    </h3>
+                    <div className="space-y-3">
+                        {[
+                            { time: '09:00-11:00', load: 45 },
+                            { time: '11:00-13:00', load: 85 },
+                            { time: '13:00-15:00', load: 60 },
+                            { time: '15:00-17:00', load: 95 },
+                            { time: '17:00-19:00', load: 75 }
+                        ].map((slot, idx) => (
+                            <div key={idx}>
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className={`text-sm ${dark ? 'text-white/80' : 'text-gray-700'}`}>
+                                        {slot.time}
+                                    </span>
+                                    <span className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        {slot.load}%
+                                    </span>
+                                </div>
+                                <div className={`h-2 ${dark ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
+                                    <div
+                                        className={`h-full rounded-full transition-all duration-500 ${
+                                            slot.load > 80 ? 'bg-red-500' :
+                                                slot.load > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                                        }`}
+                                        style={{ width: `${slot.load}%` }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </GlassCard>
+
+                {/* Review Summary */}
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Bewertungen
+                    </h3>
+                    <div className="text-center mb-4">
+                        <div className="flex items-center justify-center space-x-1 mb-2">
+                            <span className={`text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                4.9
+                            </span>
+                            <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                        </div>
+                        <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                            von 189 Bewertungen
+                        </p>
+                    </div>
+                    <div className="space-y-2">
+                        {[5, 4, 3, 2, 1].map((stars) => (
+                            <div key={stars} className="flex items-center space-x-2">
+                                <span className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'} w-3`}>
+                                    {stars}
+                                </span>
+                                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                                <div className={`flex-1 h-2 ${dark ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
+                                    <div
+                                        className="h-full bg-yellow-500 rounded-full"
+                                        style={{ width: stars === 5 ? '85%' : stars === 4 ? '10%' : stars === 3 ? '3%' : '2%' }}
+                                    />
+                                </div>
+                                <span className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'} w-10 text-right`}>
+                                    {stars === 5 ? '161' : stars === 4 ? '19' : stars === 3 ? '6' : '3'}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </GlassCard>
+            </div>
+        </div>
+    );
+};
+
+// Marketing & Social Media Component
+const MarketingDashboard = ({ dark }) => {
+    const socialMediaStats = {
+        instagram: { followers: 1234, engagement: 8.5, posts: 156 },
+        facebook: { followers: 892, engagement: 5.2, posts: 98 },
+        google: { reviews: 189, rating: 4.9, responses: 95 }
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h2 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                    Marketing & Social Media
+                </h2>
+                <button className={`
+                    px-4 py-2 rounded-lg font-medium transition-all
+                    ${dark
+                    ? 'bg-white text-black hover:bg-gray-100'
+                    : 'bg-black text-white hover:bg-gray-900'
+                }
+                `}>
+                    <Megaphone className="w-4 h-4 inline mr-2" />
+                    Neue Kampagne
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Instagram */}
+                <GlassCard dark={dark}>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                            Instagram
+                        </h3>
+                        <Instagram className="w-5 h-5 text-pink-500" />
+                    </div>
+                    <div className="space-y-3">
+                        <div>
+                            <p className={`text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                {socialMediaStats.instagram.followers.toLocaleString()}
+                            </p>
+                            <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                Follower (+124 diese Woche)
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                <p className={`text-lg font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {socialMediaStats.instagram.engagement}%
+                                </p>
+                                <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Engagement Rate
+                                </p>
+                            </div>
+                            <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                <p className={`text-lg font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {socialMediaStats.instagram.posts}
+                                </p>
+                                <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Posts
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </GlassCard>
+
+                {/* Facebook */}
+                <GlassCard dark={dark}>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                            Facebook
+                        </h3>
+                        <Facebook className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="space-y-3">
+                        <div>
+                            <p className={`text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                {socialMediaStats.facebook.followers.toLocaleString()}
+                            </p>
+                            <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                Follower (+56 diese Woche)
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                <p className={`text-lg font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {socialMediaStats.facebook.engagement}%
+                                </p>
+                                <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Engagement Rate
+                                </p>
+                            </div>
+                            <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                <p className={`text-lg font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {socialMediaStats.facebook.posts}
+                                </p>
+                                <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Posts
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </GlassCard>
+
+                {/* Google Reviews */}
+                <GlassCard dark={dark}>
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                            Google Business
+                        </h3>
+                        <Globe className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <div className="space-y-3">
+                        <div>
+                            <div className="flex items-center space-x-2">
+                                <p className={`text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {socialMediaStats.google.rating}
+                                </p>
+                                <Star className="w-6 h-6 text-yellow-500 fill-yellow-500" />
+                            </div>
+                            <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                {socialMediaStats.google.reviews} Bewertungen
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                <p className={`text-lg font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {socialMediaStats.google.responses}%
+                                </p>
+                                <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Antwortrate
+                                </p>
+                            </div>
+                            <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                                <p className={`text-lg font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    24h
+                                </p>
+                                <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Antwortzeit
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </GlassCard>
+            </div>
+
+            {/* Campaign Performance */}
+            <GlassCard dark={dark}>
+                <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                    Aktuelle Kampagnen
+                </h3>
+                <div className="space-y-3">
+                    {[
+                        { name: 'Sommer-Special 20% Rabatt', status: 'active', reach: 3420, conversions: 28, revenue: 2100 },
+                        { name: 'Neue Kunden Willkommenspaket', status: 'active', reach: 1890, conversions: 15, revenue: 825 },
+                        { name: 'Instagram Gewinnspiel', status: 'completed', reach: 5200, conversions: 42, revenue: 3150 }
+                    ].map((campaign, idx) => (
+                        <div key={idx} className={`p-4 rounded-lg border ${
+                            campaign.status === 'active'
+                                ? dark ? 'bg-green-500/10 border-green-500/30' : 'bg-green-50 border-green-300'
+                                : dark ? 'bg-white/5 border-white/10' : 'bg-gray-50 border-gray-200'
+                        }`}>
+                            <div className="flex items-center justify-between mb-2">
+                                <div>
+                                    <p className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        {campaign.name}
+                                    </p>
+                                    <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                        Reichweite: {campaign.reach.toLocaleString()} • Conversions: {campaign.conversions}
+                                    </p>
+                                </div>
+                                <div className="text-right">
+                                    <p className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        €{campaign.revenue}
+                                    </p>
+                                    {campaign.status === 'active' && (
+                                        <span className="text-xs text-green-500 font-medium">
+                                            Aktiv
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </GlassCard>
+        </div>
+    );
+};
+
+// Financial Details Component
+const FinancialDetails = ({ dark }) => {
+    const [selectedMonth, setSelectedMonth] = useState('Juni');
+
+    const monthlyData = {
+        revenue: 24580,
+        expenses: 8420,
+        profit: 16160,
+        transactions: [
+            { date: '14.06', description: 'Anna Müller - Färben & Schnitt', amount: 120, type: 'income' },
+            { date: '14.06', description: 'Max Schmidt - Herrenschnitt', amount: 35, type: 'income' },
+            { date: '14.06', description: 'Miete Juni', amount: -2500, type: 'expense' },
+            { date: '13.06', description: 'Julia Weber - Styling', amount: 65, type: 'income' },
+            { date: '13.06', description: 'Produkte Nachbestellung', amount: -450, type: 'expense' }
+        ]
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h2 className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                    Finanzen
+                </h2>
+                <div className="flex items-center space-x-4">
+                    <select className={`px-4 py-2 rounded-lg ${
+                        dark
+                            ? 'bg-white/10 border-white/20 text-white'
+                            : 'bg-gray-100 border-gray-200 text-gray-900'
+                    } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}>
+                        <option>Juni 2024</option>
+                        <option>Mai 2024</option>
+                        <option>April 2024</option>
+                    </select>
+                    <button className={`
+                        px-4 py-2 rounded-lg font-medium transition-all
+                        ${dark
+                        ? 'bg-white text-black hover:bg-gray-100'
+                        : 'bg-black text-white hover:bg-gray-900'
+                    }
+                    `}>
+                        <Download className="w-4 h-4 inline mr-2" />
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            {/* Financial Summary Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <KPICard
+                    title="Einnahmen"
+                    value={monthlyData.revenue}
+                    target={25000}
+                    icon={CircleDollarSign}
+                    color="green"
+                    dark={dark}
+                    trend={11.2}
+                />
+                <KPICard
+                    title="Ausgaben"
+                    value={monthlyData.expenses}
+                    target={8000}
+                    icon={ShoppingBag}
+                    color="red"
+                    dark={dark}
+                    trend={-5.4}
+                />
+                <KPICard
+                    title="Gewinn"
+                    value={monthlyData.profit}
+                    target={17000}
+                    icon={TrendingUp}
+                    color="blue"
+                    dark={dark}
+                    trend={22.4}
+                />
+            </div>
+
+            {/* Expense Categories */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Ausgabenverteilung
+                    </h3>
+                    <div className="space-y-3">
+                        {[
+                            { category: 'Miete & Nebenkosten', amount: 3200, percentage: 38 },
+                            { category: 'Produkte & Material', amount: 2100, percentage: 25 },
+                            { category: 'Marketing', amount: 800, percentage: 9.5 },
+                            { category: 'Versicherungen', amount: 650, percentage: 7.7 },
+                            { category: 'Sonstiges', amount: 1670, percentage: 19.8 }
+                        ].map((item, idx) => (
+                            <div key={idx}>
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className={`text-sm ${dark ? 'text-white/80' : 'text-gray-700'}`}>
+                                        {item.category}
+                                    </span>
+                                    <span className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        €{item.amount} ({item.percentage}%)
+                                    </span>
+                                </div>
+                                <div className={`h-2 ${dark ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
+                                    <div
+                                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                                        style={{ width: `${item.percentage}%` }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </GlassCard>
+
+                {/* Recent Transactions */}
+                <GlassCard dark={dark}>
+                    <h3 className={`text-lg font-semibold ${dark ? 'text-white' : 'text-gray-900'} mb-4`}>
+                        Letzte Transaktionen
+                    </h3>
+                    <div className="space-y-3">
+                        {monthlyData.transactions.map((transaction, idx) => (
+                            <div key={idx} className={`flex items-center justify-between p-3 rounded-lg ${
+                                dark ? 'bg-white/5' : 'bg-gray-50'
+                            }`}>
+                                <div>
+                                    <p className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        {transaction.description}
+                                    </p>
+                                    <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                        {transaction.date}
+                                    </p>
+                                </div>
+                                <p className={`font-bold ${
+                                    transaction.type === 'income' ? 'text-green-500' : 'text-red-500'
+                                }`}>
+                                    {transaction.type === 'income' ? '+' : ''}€{Math.abs(transaction.amount)}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </GlassCard>
+            </div>
+        </div>
+    );
+};
+
 // Main Dashboard Component
 export default function ProfessionalSalonDashboard() {
     const [darkMode, setDarkMode] = useState(true);
@@ -1066,6 +1993,134 @@ export default function ProfessionalSalonDashboard() {
         }
     ];
 
+    // Render different views based on activeView
+    const renderContent = () => {
+        switch (activeView) {
+            case 'appointments':
+                return <AppointmentsView dark={darkMode} />;
+            case 'customers':
+                return <CustomerList dark={darkMode} />;
+            case 'services':
+                return <ServicesManagement dark={darkMode} />;
+            case 'finance':
+                return <FinancialDetails dark={darkMode} />;
+            case 'analytics':
+                return <AnalyticsDashboard dark={darkMode} />;
+            case 'marketing':
+            case 'social':
+                return <MarketingDashboard dark={darkMode} />;
+            default:
+                return (
+                    <div className="space-y-6">
+                        {/* Overview - Main Dashboard */}
+                        {/* Metrics Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+                            {metrics.map((metric, index) => (
+                                <MetricCard
+                                    key={index}
+                                    {...metric}
+                                    dark={darkMode}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Main Content Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Day Schedule */}
+                            <div className="lg:col-span-2">
+                                <GlassCard dark={darkMode}>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            Tagesübersicht
+                                        </h3>
+                                        <div className="flex items-center space-x-2">
+                                            <Calendar className={`w-4 h-4 ${darkMode ? 'text-white/40' : 'text-gray-400'}`} />
+                                            <span className={`text-sm ${darkMode ? 'text-white/60' : 'text-gray-600'}`}>
+                                                Heute, {new Date().toLocaleDateString('de-DE')}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <DaySchedule dark={darkMode} />
+                                </GlassCard>
+                            </div>
+
+                            {/* Performance & Stats */}
+                            <div className="space-y-6">
+                                <MyPerformance dark={darkMode} />
+                                <LiveWebsiteStats dark={darkMode} />
+                            </div>
+                        </div>
+
+                        {/* Bottom Section */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <FinancialOverview dark={darkMode} />
+
+                            {/* Quick Actions */}
+                            <GlassCard dark={darkMode}>
+                                <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} mb-6`}>
+                                    Schnellaktionen
+                                </h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <button className={`p-4 rounded-lg ${
+                                        darkMode
+                                            ? 'bg-white/5 hover:bg-white/10 border border-white/10'
+                                            : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                    } transition-all text-left`}>
+                                        <Calendar className={`w-5 h-5 ${darkMode ? 'text-blue-400' : 'text-blue-600'} mb-2`} />
+                                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            Termin buchen
+                                        </p>
+                                        <p className={`text-xs ${darkMode ? 'text-white/60' : 'text-gray-600'} mt-1`}>
+                                            Nächster Slot: 15:00
+                                        </p>
+                                    </button>
+                                    <button className={`p-4 rounded-lg ${
+                                        darkMode
+                                            ? 'bg-white/5 hover:bg-white/10 border border-white/10'
+                                            : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                    } transition-all text-left`}>
+                                        <UserPlus className={`w-5 h-5 ${darkMode ? 'text-green-400' : 'text-green-600'} mb-2`} />
+                                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            Neuer Kunde
+                                        </p>
+                                        <p className={`text-xs ${darkMode ? 'text-white/60' : 'text-gray-600'} mt-1`}>
+                                            Schnell erfassen
+                                        </p>
+                                    </button>
+                                    <button className={`p-4 rounded-lg ${
+                                        darkMode
+                                            ? 'bg-white/5 hover:bg-white/10 border border-white/10'
+                                            : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                    } transition-all text-left`}>
+                                        <Receipt className={`w-5 h-5 ${darkMode ? 'text-purple-400' : 'text-purple-600'} mb-2`} />
+                                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            Rechnung
+                                        </p>
+                                        <p className={`text-xs ${darkMode ? 'text-white/60' : 'text-gray-600'} mt-1`}>
+                                            Erstellen & senden
+                                        </p>
+                                    </button>
+                                    <button className={`p-4 rounded-lg ${
+                                        darkMode
+                                            ? 'bg-white/5 hover:bg-white/10 border border-white/10'
+                                            : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                                    } transition-all text-left`}>
+                                        <MessageSquare className={`w-5 h-5 ${darkMode ? 'text-orange-400' : 'text-orange-600'} mb-2`} />
+                                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                            SMS Erinnerung
+                                        </p>
+                                        <p className={`text-xs ${darkMode ? 'text-white/60' : 'text-gray-600'} mt-1`}>
+                                            An alle morgen
+                                        </p>
+                                    </button>
+                                </div>
+                            </GlassCard>
+                        </div>
+                    </div>
+                );
+        }
+    };
+
     return (
         <div className={`min-h-screen ${darkMode ? 'bg-black' : 'bg-gray-50'}`}>
             {/* Enhanced Sidebar */}
@@ -1157,8 +2212,21 @@ export default function ProfessionalSalonDashboard() {
                         ))}
                     </div>
 
-                    {/* User Profile */}
-                    <div className={`p-4 border-t ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
+                    {/* User Profile & Settings */}
+                    <div className={`p-4 border-t ${darkMode ? 'border-white/10' : 'border-gray-200'} space-y-2`}>
+                        <button className={`w-full p-3 rounded-lg ${
+                            darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                        } transition-colors flex items-center ${
+                            sidebarCollapsed ? 'justify-center' : 'space-x-3'
+                        }`}>
+                            <Settings className={`w-5 h-5 ${darkMode ? 'text-white/60' : 'text-gray-600'}`} />
+                            {!sidebarCollapsed && (
+                                <span className={`text-sm ${darkMode ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Einstellungen
+                                </span>
+                            )}
+                        </button>
+
                         <button className={`w-full p-3 rounded-lg ${
                             darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'
                         } transition-colors flex items-center ${
@@ -1197,7 +2265,13 @@ export default function ProfessionalSalonDashboard() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                                {activeView === 'appointments' ? 'Terminkalender' : 'Guten Morgen, Max!'}
+                                {activeView === 'appointments' ? 'Terminkalender' :
+                                    activeView === 'customers' ? 'Kundenverwaltung' :
+                                        activeView === 'services' ? 'Service-Verwaltung' :
+                                            activeView === 'finance' ? 'Finanzen' :
+                                                activeView === 'analytics' ? 'Analytics & Insights' :
+                                                    activeView === 'marketing' || activeView === 'social' ? 'Marketing & Social Media' :
+                                                        'Guten Tag, Max!'}
                             </h1>
                             <p className={`text-sm ${darkMode ? 'text-white/60' : 'text-gray-600'} mt-1`}>
                                 {new Date().toLocaleDateString('de-DE', {
@@ -1225,6 +2299,20 @@ export default function ProfessionalSalonDashboard() {
                                     } border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all`}
                                 />
                             </div>
+
+                            {/* Theme Toggle */}
+                            <button
+                                onClick={() => setDarkMode(!darkMode)}
+                                className={`p-2 rounded-lg ${
+                                    darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                                } transition-colors`}
+                            >
+                                {darkMode ? (
+                                    <Sun className={`w-5 h-5 text-white`} />
+                                ) : (
+                                    <Moon className={`w-5 h-5 text-gray-700`} />
+                                )}
+                            </button>
 
                             {/* Notifications */}
                             <div className="relative">
@@ -1259,81 +2347,39 @@ export default function ProfessionalSalonDashboard() {
                                                     darkMode ? 'border-white/5' : 'border-gray-100'
                                                 }`}>
                                                     <p className={`text-sm ${
-                                                        darkMode ? 'text-white' : 'text-gray-900'
-                                                    }`}>{notification.text}</p>
-                                                    <p className={`text-xs ${
-                                                        darkMode ? 'text-white/40' : 'text-gray-500'
-                                                    } mt-1`}>{notification.time}</p>
+                                                        darkMode ? 'text-white' : 'text-gray-900'}`}>
+                                                        {notification.text}
+                                                    </p>
+                                                    <p className={`text-xs mt-1 ${
+                                                        darkMode ? 'text-white/40' : 'text-gray-400'
+                                                    }`}>{notification.time}</p>
                                                 </div>
                                             ))}
                                         </div>
+                                        <div className={`p-2 text-center border-t ${
+                                            darkMode ? 'border-white/10' : 'border-gray-200'
+                                        }`}>
+                                            <button className={`text-sm font-medium ${
+                                                darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-700'
+                                            }`}>
+                                                Alle ansehen
+                                            </button>
+                                        </div>
                                     </div>
-                                )}{/* Close Notifications Dropdown */}
+                                )}
                             </div>
                         </div>
-
-                        {/* Close Header Elements */}
                     </div>
                 </header>
 
-                {/* Main Content Area */}
+                {/* Main content area */}
                 <main className="p-8">
-                    {/* Overview View */}
-                    {activeView === 'overview' && (
-                        <div className="space-y-6">
-                            <div className="grid grid-cols-1 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-
-                                {/* Main Column */}
-                                <div className="lg:col-span-2 xl:col-span-3 space-y-6">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {metrics.slice(0, 6).map((metric, index) => (
-                                            <MetricCard
-                                                key={index}
-                                                icon={metric.icon}
-                                                label={metric.label}
-                                                value={metric.value}
-                                                change={metric.change}
-                                                trend={metric.trend}
-                                                subtitle={metric.subtitle}
-                                                chartData={metric.chartData}
-                                                dark={darkMode}
-                                                onClick={() => {}}
-                                            />
-                                        ))}
-                                    </div>
-                                    <FinancialOverview dark={darkMode} />
-                                </div>
-
-                                {/* Right Sidebar Column */}
-                                <div className="lg:col-span-1 xl:col-span-1 space-y-6">
-                                    <MyPerformance dark={darkMode} />
-                                    <LiveWebsiteStats dark={darkMode} />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Appointments View */}
-                    {activeView === 'appointments' && <AppointmentsView dark={darkMode} />}
-
-                    {/* Placeholder for other views */}
-                    {(activeView !== 'overview' && activeView !== 'appointments') && (
-                        <GlassCard dark={darkMode}>
-                            <div className="text-center py-12">
-                                <h2 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>
-                                    Ansicht: {activeView}
-                                </h2>
-                                <p className={`mt-2 ${darkMode ? 'text-white/60' : 'text-gray-600'}`}>
-                                    Inhalt für diese Ansicht wird noch implementiert.
-                                </p>
-                            </div>
-                        </GlassCard>
-                    )}
+                    {renderContent()}
                 </main>
 
+                {/* AI Assistant FAB */}
                 <AIAssistant dark={darkMode} />
-
-            </div> {/* Close Main Content div */}
-        </div> // Close Root div
+            </div>
+        </div>
     );
 }

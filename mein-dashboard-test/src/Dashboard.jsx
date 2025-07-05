@@ -1,3 +1,752 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    LayoutDashboard, Calendar, Users, Scissors, Package, CreditCard,
+    BarChart3, Settings, Bell, Search, Plus, Filter, ChevronRight,
+    TrendingUp, TrendingDown, Clock, Star, AlertCircle, CheckCircle,
+    DollarSign, UserPlus, Eye, MoreHorizontal, Sun, Moon, Menu, X,
+    Home, MessageSquare, FileText, LogOut, ChevronDown, Phone, Mail,
+    MapPin, Target, RefreshCw, Download, ArrowRight, Percent, Activity,
+    Shield, Zap, Award, BookOpen, Briefcase, Coffee, Heart, Image,
+    Smartphone, Repeat, Gift, Timer, PieChart, BarChart, CalendarDays,
+    UserCheck, ShoppingCart, Palette, Camera, Instagram, Facebook, Globe,
+    Sparkles, MousePointer, UserX, ArrowUpRight, ArrowDownRight, Cpu, Wifi,
+    HelpCircle, ChevronLeft, Inbox, Archive, Trash2, Send, PlayCircle,
+    PauseCircle, AlertTriangle, CheckCircle2, XCircle, Info, Database,
+    Server, Lock, Unlock, Share2, Copy, Edit, Save, ZoomIn, Building2,
+    Banknote, Receipt, Gauge, Layers, Grid3x3, List, BarChart2, LineChart,
+    Bot, Brain, Lightbulb, Trophy, Medal, Crown, Gem, Wallet,
+    Calculator, Printer, QrCode, Scan, WifiOff, Battery, BatteryLow,
+    Volume2, VolumeX, Mic, Video, Headphones, Monitor, Tablet, Watch,
+    CloudRain, CloudSnow, Wind, Droplets, Thermometer, Sunrise, Sunset,
+    Brush, Droplet, Sparkle, CircleDollarSign,
+    MessageCircle, ThumbsUp, AlertOctagon, CheckSquare, Square, MoreVertical,
+    Tag, Bookmark, Clock3, Clock4, Clock5,
+    Euro, Hash, BarChart4,
+    FileBarChart, FileSpreadsheet, Folder, FolderOpen, File,
+    Coins, HandCoins, PiggyBank,
+    ShoppingBag, Store, Package2, Truck, PackageCheck,
+    UserCircle, UserCog, UserMinus, UsersRound, Contact,
+    CalendarCheck, CalendarClock, CalendarX, CalendarRange,
+    BellRing, BellOff, BellPlus, Megaphone, Radio,
+    Navigation, MessageSquareText,
+    ArrowLeft, History, MapPinned, Navigation2, ShieldCheck,
+    Fingerprint, FolderLock, ClipboardCheck,
+    Beaker, TestTube, Wand2, CircleCheckBig,
+    CalendarHeart, PartyPopper, Cake,
+    Music, Volume, PlaySquare,
+    CheckCheck, CircleCheck, CircleX,
+    Signal, BatteryCharging, Pause, Play, SkipForward,
+    Link, Link2, ExternalLink, Maximize2, Minimize2,
+    BookmarkPlus, BookmarkMinus, BookmarkCheck,
+    FolderPlus, FolderMinus, FolderCheck,
+    Ticket,
+    Command, Option,
+    Sliders, ToggleLeft, ToggleRight,
+    Bluetooth, Cast, Flashlight,
+    GitBranch, GitCommit, GitMerge,
+    Infinity, Key, Keyboard,
+    Landmark, Languages, Laptop,
+    LifeBuoy, Loader,
+    MessagesSquare, MicOff, Minimize,
+    Mountain, Move, Network,
+    Paperclip, PenTool,
+    Power, PowerOff, Presentation,
+    Puzzle, RefreshCcw,
+    Repeat2, Rewind, Rocket,
+    RotateCcw, RotateCw, Rss,
+    ScanLine, Share,
+    ShieldAlert, ShieldOff, Shuffle,
+    Sidebar, SkipBack, Slash,
+    Smile, Snowflake, Speaker,
+    StopCircle,
+    Sword,
+    Table, Terminal,
+    Trash,
+    TreePine, Triangle, Tv,
+    Type, Umbrella, Underline,
+    Upload, User,
+    VideoOff, Voicemail,
+    Volume1,
+    Wand,
+    Waves, Webcam,
+    XSquare,
+    Youtube,
+    ZoomOut, ChevronUp, ChevronsUp,
+    ChevronsDown, ChevronsLeft, ChevronsRight,
+    ArrowUp, ArrowDown, ArrowLeftRight,
+    ArrowRightLeft, ArrowUpDown, CornerDownLeft,
+    CornerDownRight, CornerLeftDown, CornerLeftUp,
+    CornerRightDown, CornerRightUp, CornerUpLeft,
+    CornerUpRight, MoveDown, MoveLeft,
+    MoveRight, MoveUp
+} from 'lucide-react';
+
+// Enhanced Glass Card Component with animations
+const GlassCard = ({ children, className = '', hover = false, onClick, padding = true, dark, blur = 'md', depth = 1, animate = false }) => {
+    const depthStyles = {
+        1: dark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-sm',
+        2: dark ? 'bg-white/10 border-white/20' : 'bg-white border-gray-300 shadow-md',
+        3: dark ? 'bg-white/15 border-white/30' : 'bg-white border-gray-400 shadow-lg'
+    };
+
+    return (
+        <div
+            onClick={onClick}
+            className={`
+        ${depthStyles[depth]}
+        backdrop-blur-${blur} border rounded-xl
+        ${hover
+                ? dark
+                    ? 'hover:bg-white/10 hover:border-white/20 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
+                    : 'hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] active:scale-[0.98]'
+                : ''
+            }
+        transition-all duration-300
+        ${onClick ? 'cursor-pointer' : ''}
+        ${padding ? 'p-4 md:p-6' : ''}
+        ${animate ? 'animate-fade-in' : ''}
+        ${className}
+    `}
+        >
+            {children}
+        </div>
+    );
+};
+
+// Advanced Chart Component with interactions
+const AdvancedChart = ({ type = 'line', data, labels, dark, height = 200, interactive = true }) => {
+    const canvasRef = useRef(null);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const rect = canvas.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+
+        // Set canvas size
+        canvas.width = width;
+        canvas.height = height;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // Draw grid
+        ctx.strokeStyle = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+        ctx.lineWidth = 1;
+
+        // Horizontal grid lines
+        for (let i = 0; i <= 5; i++) {
+            const y = (height / 5) * i;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            ctx.stroke();
+        }
+
+        // Vertical grid lines
+        for (let i = 0; i <= data.length - 1; i++) {
+            const x = (width / (data.length - 1)) * i;
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+            ctx.stroke();
+        }
+
+        if (type === 'line' && data && data.length > 0) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+
+            ctx.fillStyle = gradient;
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+
+            // Draw area
+            ctx.beginPath();
+            data.forEach((value, index) => {
+                const x = (width / (data.length - 1)) * index;
+                const y = height - (value / Math.max(...data)) * height * 0.9;
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            ctx.fill();
+
+            // Draw line
+            ctx.beginPath();
+            data.forEach((value, index) => {
+                const x = (width / (data.length - 1)) * index;
+                const y = height - (value / Math.max(...data)) * height * 0.9;
+
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+
+            // Draw points and values
+            data.forEach((value, index) => {
+                const x = (width / (data.length - 1)) * index;
+                const y = height - (value / Math.max(...data)) * height * 0.9;
+
+                // Draw point
+                ctx.beginPath();
+                ctx.arc(x, y, hoveredIndex === index ? 6 : 4, 0, Math.PI * 2);
+                ctx.fillStyle = '#3b82f6';
+                ctx.fill();
+                ctx.strokeStyle = dark ? '#000' : '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw value on hover
+                if (hoveredIndex === index) {
+                    ctx.fillStyle = dark ? '#fff' : '#000';
+                    ctx.font = '12px Inter, system-ui, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(value.toLocaleString(), x, y - 10);
+                }
+            });
+        } else if (type === 'bar') {
+            const barWidth = width / data.length * 0.8;
+            const spacing = width / data.length * 0.2;
+
+            data.forEach((value, index) => {
+                const x = index * (barWidth + spacing) + spacing / 2;
+                const barHeight = (value / Math.max(...data)) * height * 0.9;
+                const y = height - barHeight;
+
+                // Bar gradient
+                const barGradient = ctx.createLinearGradient(0, y, 0, height);
+                barGradient.addColorStop(0, hoveredIndex === index ? '#3b82f6' : '#60a5fa');
+                barGradient.addColorStop(1, hoveredIndex === index ? '#1e40af' : '#3b82f6');
+                ctx.fillStyle = barGradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                // Value on top
+                if (hoveredIndex === index) {
+                    ctx.fillStyle = dark ? '#fff' : '#000';
+                    ctx.font = '12px Inter, system-ui, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(value.toLocaleString(), x + barWidth / 2, y - 5);
+                }
+            });
+        }
+
+        // Labels
+        if (labels) {
+            ctx.fillStyle = dark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)';
+            ctx.font = '11px Inter, system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            labels.forEach((label, index) => {
+                const x = type === 'bar'
+                    ? index * (width / data.length) + (width / data.length) / 2
+                    : (width / (labels.length - 1)) * index;
+                ctx.fillText(label, x, height + 15);
+            });
+        }
+    }, [data, type, dark, height, labels, hoveredIndex]);
+
+    const handleMouseMove = (e) => {
+        if (!interactive) return;
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const segmentWidth = rect.width / data.length;
+        const index = Math.floor(x / segmentWidth);
+        setHoveredIndex(index >= 0 && index < data.length ? index : null);
+    };
+
+    return (
+        <div className="relative w-full" style={{ height: height + 20 }}>
+            <canvas
+                ref={canvasRef}
+                className="w-full cursor-crosshair"
+                style={{ height: height + 20 }}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={() => setHoveredIndex(null)}
+            />
+        </div>
+    );
+};
+
+// Enhanced KPI Card with animations
+const KPICard = ({ title, value, target, icon: Icon, color = 'blue', dark, trend, subtitle, comparison }) => {
+    const percentage = target ? Math.min((value / target) * 100, 100) : 0;
+    const radius = 45;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    const colorClasses = {
+        blue: 'text-blue-500',
+        green: 'text-green-500',
+        purple: 'text-purple-500',
+        orange: 'text-orange-500',
+        red: 'text-red-500',
+        yellow: 'text-yellow-500',
+        pink: 'text-pink-500',
+        teal: 'text-teal-500'
+    };
+
+    const gradients = {
+        blue: ['#3B82F6', '#1E40AF'],
+        green: ['#10B981', '#059669'],
+        purple: ['#8B5CF6', '#6D28D9'],
+        orange: ['#F59E0B', '#D97706'],
+        red: ['#EF4444', '#DC2626'],
+        yellow: ['#F59E0B', '#D97706'],
+        pink: ['#EC4899', '#DB2777'],
+        teal: ['#14B8A6', '#0D9488']
+    };
+
+    return (
+        <GlassCard dark={dark} hover className="group">
+            <div className="flex items-center justify-between">
+                <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-3">
+                        <div className={`p-2 rounded-lg ${dark ? 'bg-white/10' : 'bg-gray-100'
+                        } group-hover:scale-110 transition-transform`}>
+                            <Icon className={`w-5 h-5 ${colorClasses[color]}`} />
+                        </div>
+                        <h3 className={`text-sm font-medium ${dark ? 'text-white/80' : 'text-gray-700'}`}>
+                            {title}
+                        </h3>
+                    </div>
+                    <div className="space-y-1">
+                        <p className={`text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                            {typeof value === 'number' ? value.toLocaleString() : value}
+                        </p>
+                        {subtitle && (
+                            <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                {subtitle}
+                            </p>
+                        )}
+                        {target && (
+                            <p className={`text-xs ${dark ? 'text-white/40' : 'text-gray-500'}`}>
+                                Ziel: {target.toLocaleString()}
+                            </p>
+                        )}
+                        {trend !== undefined && (
+                            <div className={`flex items-center space-x-1 text-sm ${trend > 0 ? 'text-green-500' : 'text-red-500'
+                            }`}>
+                                {trend > 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                                <span className="font-medium">{Math.abs(trend)}%</span>
+                                {comparison && (
+                                    <span className={`text-xs ${dark ? 'text-white/40' : 'text-gray-500'}`}>
+                                        vs. {comparison}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+                {target && (
+                    <div className="relative">
+                        <svg width="110" height="110" className="transform -rotate-90">
+                            <circle
+                                cx="55"
+                                cy="55"
+                                r={radius}
+                                stroke={dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}
+                                strokeWidth="8"
+                                fill="none"
+                            />
+                            <circle
+                                cx="55"
+                                cy="55"
+                                r={radius}
+                                stroke={`url(#gradient-${color}-${title})`}
+                                strokeWidth="8"
+                                fill="none"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={strokeDashoffset}
+                                strokeLinecap="round"
+                                className="transition-all duration-1000"
+                            />
+                            <defs>
+                                <linearGradient id={`gradient-${color}-${title}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stopColor={gradients[color][0]} />
+                                    <stop offset="100%" stopColor={gradients[color][1]} />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="text-center">
+                                <span className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {Math.round(percentage)}%
+                                </span>
+                                <span className={`text-xs block ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    erreicht
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </GlassCard>
+    );
+};
+
+// Professional Sidebar Component
+const Sidebar = ({ dark, collapsed, setCollapsed, activeView, setActiveView }) => {
+    const navigationSections = [
+        {
+            title: 'Hauptmenü',
+            items: [
+                { id: 'overview', icon: LayoutDashboard, label: 'Übersicht', badge: null },
+                { id: 'appointments', icon: Calendar, label: 'Termine', badge: '8' },
+                { id: 'customers', icon: Users, label: 'Kunden', badge: '276' },
+                { id: 'services', icon: Scissors, label: 'Services', badge: null }
+            ]
+        },
+        {
+            title: 'Geschäft',
+            items: [
+                { id: 'finance', icon: CreditCard, label: 'Finanzen', badge: null },
+                { id: 'inventory', icon: Package, label: 'Inventar', badge: '!', badgeType: 'warning' },
+                { id: 'invoices', icon: Receipt, label: 'Rechnungen', badge: '3' },
+                { id: 'reports', icon: FileBarChart, label: 'Berichte', badge: 'NEU', badgeType: 'success' }
+            ]
+        },
+        {
+            title: 'Marketing',
+            items: [
+                { id: 'analytics', icon: BarChart3, label: 'Analytics', badge: null },
+                { id: 'marketing', icon: Megaphone, label: 'Kampagnen', badge: '2' },
+                { id: 'social', icon: Share2, label: 'Social Media', badge: null },
+                { id: 'reviews', icon: Star, label: 'Bewertungen', badge: '5.0', badgeType: 'success' }
+            ]
+        },
+        {
+            title: 'Verwaltung',
+            items: [
+                { id: 'team', icon: UsersRound, label: 'Team', badge: null },
+                { id: 'settings', icon: Settings, label: 'Einstellungen', badge: null },
+                { id: 'ai-insights', icon: Brain, label: 'AI Insights', badge: 'PRO', badgeType: 'pro' },
+                { id: 'help', icon: HelpCircle, label: 'Hilfe', badge: null }
+            ]
+        }
+    ];
+
+    return (
+        <aside className={`
+    fixed left-0 top-0 h-full z-40 transition-all duration-300
+    ${dark ? 'bg-black/90' : 'bg-white'}
+    backdrop-blur-xl border-r
+    ${dark ? 'border-white/10' : 'border-gray-200'}
+    ${collapsed ? 'w-20' : 'w-72'}
+    hidden lg:block
+`}>
+            <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className={`p-6 border-b ${dark ? 'border-white/10' : 'border-gray-200'}`}>
+                    <div className="flex items-center justify-between">
+                        {!collapsed && (
+                            <div className="flex items-center space-x-3">
+                                <div className={`w-12 h-12 rounded-2xl ${dark ? 'bg-gradient-to-br from-blue-500 to-purple-600' : 'bg-gradient-to-br from-blue-400 to-purple-500'
+                                } flex items-center justify-center shadow-lg`}>
+                                    <Scissors className="w-6 h-6 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className={`text-xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        SalonPro
+                                    </h1>
+                                    <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                        Enterprise Edition
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        <button
+                            onClick={() => setCollapsed(!collapsed)}
+                            className={`${dark ? 'text-white/60 hover:text-white' : 'text-gray-600 hover:text-gray-900'} 
+                               p-2 rounded-lg hover:bg-white/10 transition-colors`}
+                        >
+                            {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Navigation */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+                    {navigationSections.map((section, sectionIdx) => (
+                        <div key={sectionIdx}>
+                            {!collapsed && (
+                                <p className={`text-xs font-medium uppercase tracking-wider mb-2 px-3 ${dark ? 'text-white/40' : 'text-gray-500'
+                                }`}>
+                                    {section.title}
+                                </p>
+                            )}
+                            <nav className="space-y-1">
+                                {section.items.map(item => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setActiveView(item.id)}
+                                        className={`
+                                    w-full flex items-center justify-between p-3 rounded-xl
+                                    transition-all duration-200 group relative
+                                    ${activeView === item.id
+                                            ? dark
+                                                ? 'bg-white/10 text-white shadow-lg'
+                                                : 'bg-gradient-to-r from-blue-50 to-purple-50 text-gray-900 shadow-md'
+                                            : dark
+                                                ? 'text-white/60 hover:text-white hover:bg-white/5'
+                                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                        }
+                                `}
+                                    >
+                                        <div className="flex items-center space-x-3">
+                                            <item.icon className={`w-5 h-5 flex-shrink-0 ${activeView === item.id ? 'text-blue-500' : ''
+                                            }`} />
+                                            {!collapsed && <span className="font-medium">{item.label}</span>}
+                                        </div>
+                                        {!collapsed && item.badge && (
+                                            <span className={`
+                                        px-2 py-0.5 text-xs font-medium rounded-full
+                                        ${item.badgeType === 'success'
+                                                ? 'bg-green-500 text-white'
+                                                : item.badgeType === 'warning'
+                                                    ? 'bg-yellow-500 text-white animate-pulse'
+                                                    : item.badgeType === 'pro'
+                                                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
+                                                        : dark
+                                                            ? 'bg-white/20 text-white'
+                                                            : 'bg-gray-200 text-gray-700'}
+                                    `}>
+                                                {item.badge}
+                                            </span>
+                                        )}
+                                        {activeView === item.id && (
+                                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
+                                        )}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+                    ))}
+                </div>
+
+                {/* User Profile & Actions */}
+                <div className={`p-4 border-t ${dark ? 'border-white/10' : 'border-gray-200'} space-y-3`}>
+                    {/* Quick Stats */}
+                    {!collapsed && (
+                        <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
+                            <div className="flex items-center justify-between mb-2">
+                                <span className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                    Heute
+                                </span>
+                                <span className={`text-sm font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    €1,247
+                                </span>
+                            </div>
+                            <div className={`h-1.5 ${dark ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
+                                <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
+                                     style={{ width: '83%' }} />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* User Profile */}
+                    <button className={`w-full p-3 rounded-xl ${dark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                    } transition-colors flex items-center ${collapsed ? 'justify-center' : 'space-x-3'
+                    }`}>
+                        <div className="relative">
+                            <img
+                                src="https://ui-avatars.com/api/?name=Max+Mustermann&background=3b82f6&color=fff"
+                                alt="Profile"
+                                className="w-10 h-10 rounded-full"
+                            />
+                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-black" />
+                        </div>
+                        {!collapsed && (
+                            <>
+                                <div className="flex-1 text-left">
+                                    <p className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
+                                        Max Mustermann
+                                    </p>
+                                    <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
+                                        Inhaber & Stylist
+                                    </p>
+                                </div>
+                                <LogOut className={`w-4 h-4 ${dark ? 'text-white/40' : 'text-gray-400'}`} />
+                            </>
+                        )}
+                    </button>
+                </div>
+            </div>
+        </aside>
+    );
+};
+
+// Mobile Navigation
+const MobileNav = ({ activeView, setActiveView, dark }) => {
+    const mainItems = [
+        { id: 'overview', icon: Home, label: 'Start' },
+        { id: 'appointments', icon: Calendar, label: 'Termine' },
+        { id: 'quick-booking', icon: Plus, label: '', isAction: true },
+        { id: 'customers', icon: Users, label: 'Kunden' },
+        { id: 'more', icon: MoreHorizontal, label: 'Mehr' }
+    ];
+
+    return (
+        <div className={`fixed bottom-0 left-0 right-0 z-50 md:hidden ${dark ? 'bg-black/90' : 'bg-white/90'
+        } backdrop-blur-xl border-t ${dark ? 'border-white/10' : 'border-gray-200'
+        } safe-area-bottom`}>
+            <div className="grid grid-cols-5 items-center">
+                {mainItems.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={() => setActiveView(item.id)}
+                        className={`
+                        relative flex flex-col items-center justify-center py-2
+                        ${item.isAction
+                            ? ''
+                            : activeView === item.id
+                                ? dark ? 'text-white' : 'text-gray-900'
+                                : dark ? 'text-white/40' : 'text-gray-400'
+                        }
+                        transition-all duration-200
+                    `}
+                    >
+                        {item.isAction ? (
+                            <div className={`
+                            absolute -top-6 p-3 rounded-full shadow-lg
+                            ${dark ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'}
+                            text-white transform hover:scale-110 transition-transform
+                        `}>
+                                <item.icon className="w-6 h-6" />
+                            </div>
+                        ) : (
+                            <>
+                                <item.icon className="w-5 h-5 mb-1" />
+                                <span className="text-xs">{item.label}</span>
+                                {activeView === item.id && (
+                                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full" />
+                                )}
+                            </>
+                        )}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+// Enhanced Header Component
+const Header = ({ dark, setDarkMode, title, subtitle, showNotifications, setShowNotifications, notificationCount }) => {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showSearch, setShowSearch] = useState(false);
+
+    return (
+        <header className={`
+            sticky top-0 z-30 px-4 md:px-8 py-4
+            ${dark ? 'bg-black/80' : 'bg-white/90'}
+            backdrop-blur-xl border-b
+            ${dark ? 'border-white/10' : 'border-gray-200'}
+        `}>
+            <div className="flex items-center justify-between">
+                <div className="flex-1">
+                    <h1 className={`text-2xl md:text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
+                        {title}
+                    </h1>
+                    {subtitle && (
+                        <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'} mt-1`}>
+                            {subtitle}
+                        </p>
+                    )}
+                </div>
+
+                <div className="flex items-center space-x-2 md:space-x-4">
+                    {/* Search - Desktop */}
+                    <div className={`hidden md:block relative`}>
+                        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${dark ? 'text-white/40' : 'text-gray-400'
+                        }`} />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Suchen..."
+                            className={`pl-10 pr-4 py-2 rounded-xl w-64 ${dark
+                                ? 'bg-white/5 border-white/10 text-white placeholder-white/40'
+                                : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400'
+                            } border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all`}
+                        />
+                    </div>
+
+                    {/* Search - Mobile */}
+                    <button
+                        onClick={() => setShowSearch(!showSearch)}
+                        className={`md:hidden p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                        } transition-colors`}
+                    >
+                        <Search className={`w-5 h-5 ${dark ? 'text-white' : 'text-gray-700'}`} />
+                    </button>
+
+                    {/* Quick Actions */}
+                    <button className={`p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                    } transition-colors hidden md:block`}>
+                        <RefreshCw className={`w-5 h-5 ${dark ? 'text-white' : 'text-gray-700'}`} />
+                    </button>
+
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={() => setDarkMode(!dark)}
+                        className={`p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                        } transition-colors`}
+                    >
+                        {dark ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-gray-700" />}
+                    </button>
+
+                    {/* Notifications */}
+                    <button
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className={`relative p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                        } transition-colors`}
+                    >
+                        <Bell className={`w-5 h-5 ${dark ? 'text-white' : 'text-gray-700'}`} />
+                        {notificationCount > 0 && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
+                                {notificationCount > 9 ? '9+' : notificationCount}
+                            </div>
+                        )}
+                    </button>
+                </div>
+            </div>
+
+            {/* Mobile Search Bar */}
+            {showSearch && (
+                <div className="md:hidden mt-4">
+                    <div className="relative">
+                        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${dark ? 'text-white/40' : 'text-gray-400'
+                        }`} />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Suchen..."
+                            className={`w-full pl-10 pr-4 py-3 rounded-xl ${dark
+                                ? 'bg-white/5 border-white/10 text-white placeholder-white/40'
+                                : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400'
+                            } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
+                            autoFocus
+                        />
+                    </div>
+                </div>
+            )}
+        </header>
+    );
+};
+
 // Services Management Component
 const ServicesManagement = ({ dark }) => {
     const [services, setServices] = useState([
@@ -113,10 +862,9 @@ const ServicesManagement = ({ dark }) => {
                             <button
                                 key={category}
                                 onClick={() => setSelectedCategory(category)}
-                                className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                                    selectedCategory === category
-                                        ? dark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600'
-                                        : dark ? 'hover:bg-white/10 text-white/80' : 'hover:bg-gray-100 text-gray-700'
+                                className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${selectedCategory === category
+                                    ? dark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600'
+                                    : dark ? 'hover:bg-white/10 text-white/80' : 'hover:bg-gray-100 text-gray-700'
                                 }`}
                             >
                                 <div className="flex items-center justify-between">
@@ -203,18 +951,16 @@ const ServicesManagement = ({ dark }) => {
                                 type="text"
                                 placeholder="Service Name"
                                 defaultValue={editingService?.name}
-                                className={`w-full px-4 py-2 rounded-lg ${
-                                    dark
-                                        ? 'bg-white/10 text-white placeholder-white/40 border-white/20'
-                                        : 'bg-gray-100 text-gray-900 placeholder-gray-400 border-gray-200'
+                                className={`w-full px-4 py-2 rounded-lg ${dark
+                                    ? 'bg-white/10 text-white placeholder-white/40 border-white/20'
+                                    : 'bg-gray-100 text-gray-900 placeholder-gray-400 border-gray-200'
                                 } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                             />
                             <select
                                 defaultValue={editingService?.category}
-                                className={`w-full px-4 py-2 rounded-lg ${
-                                    dark
-                                        ? 'bg-white/10 text-white border-white/20'
-                                        : 'bg-gray-100 text-gray-900 border-gray-200'
+                                className={`w-full px-4 py-2 rounded-lg ${dark
+                                    ? 'bg-white/10 text-white border-white/20'
+                                    : 'bg-gray-100 text-gray-900 border-gray-200'
                                 } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                             >
                                 <option>Kategorie wählen</option>
@@ -229,20 +975,18 @@ const ServicesManagement = ({ dark }) => {
                                     type="number"
                                     placeholder="Preis (€)"
                                     defaultValue={editingService?.price}
-                                    className={`px-4 py-2 rounded-lg ${
-                                        dark
-                                            ? 'bg-white/10 text-white placeholder-white/40 border-white/20'
-                                            : 'bg-gray-100 text-gray-900 placeholder-gray-400 border-gray-200'
+                                    className={`px-4 py-2 rounded-lg ${dark
+                                        ? 'bg-white/10 text-white placeholder-white/40 border-white/20'
+                                        : 'bg-gray-100 text-gray-900 placeholder-gray-400 border-gray-200'
                                     } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                                 />
                                 <input
                                     type="number"
                                     placeholder="Dauer (Min)"
                                     defaultValue={editingService?.duration}
-                                    className={`px-4 py-2 rounded-lg ${
-                                        dark
-                                            ? 'bg-white/10 text-white placeholder-white/40 border-white/20'
-                                            : 'bg-gray-100 text-gray-900 placeholder-gray-400 border-gray-200'
+                                    className={`px-4 py-2 rounded-lg ${dark
+                                        ? 'bg-white/10 text-white placeholder-white/40 border-white/20'
+                                        : 'bg-gray-100 text-gray-900 placeholder-gray-400 border-gray-200'
                                     } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
                                 />
                             </div>
@@ -252,18 +996,16 @@ const ServicesManagement = ({ dark }) => {
                                         setShowAddModal(false);
                                         setEditingService(null);
                                     }}
-                                    className={`flex-1 py-2 rounded-lg border ${
-                                        dark
-                                            ? 'border-white/20 text-white hover:bg-white/10'
-                                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                                    className={`flex-1 py-2 rounded-lg border ${dark
+                                        ? 'border-white/20 text-white hover:bg-white/10'
+                                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                                     } transition-colors`}
                                 >
                                     Abbrechen
                                 </button>
-                                <button className={`flex-1 py-2 rounded-lg ${
-                                    dark
-                                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                        : 'bg-blue-500 text-white hover:bg-blue-600'
+                                <button className={`flex-1 py-2 rounded-lg ${dark
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                    : 'bg-blue-500 text-white hover:bg-blue-600'
                                 } transition-colors`}>
                                     {editingService ? 'Speichern' : 'Hinzufügen'}
                                 </button>
@@ -307,8 +1049,7 @@ const InventoryManagement = ({ dark }) => {
                 </h2>
                 <div className="flex items-center space-x-3">
                     {lowStockCount > 0 && (
-                        <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg ${
-                            dark ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-600'
+                        <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg ${dark ? 'bg-red-500/20 text-red-400' : 'bg-red-100 text-red-600'
                         }`}>
                             <AlertCircle className="w-4 h-4" />
                             <span className="text-sm font-medium">{lowStockCount} niedrige Bestände</span>
@@ -374,8 +1115,7 @@ const InventoryManagement = ({ dark }) => {
                 <GlassCard dark={dark}>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className={`text-2xl font-bold ${
-                                lowStockCount > 0 ? 'text-red-500' : dark ? 'text-white' : 'text-gray-900'
+                            <p className={`text-2xl font-bold ${lowStockCount > 0 ? 'text-red-500' : dark ? 'text-white' : 'text-gray-900'
                             }`}>
                                 {lowStockCount}
                             </p>
@@ -383,8 +1123,7 @@ const InventoryManagement = ({ dark }) => {
                                 Nachbestellen
                             </p>
                         </div>
-                        <AlertTriangle className={`w-8 h-8 ${
-                            lowStockCount > 0 ? 'text-red-500/50' : dark ? 'text-white/20' : 'text-gray-300'
+                        <AlertTriangle className={`w-8 h-8 ${lowStockCount > 0 ? 'text-red-500/50' : dark ? 'text-white/20' : 'text-gray-300'
                         }`} />
                     </div>
                 </GlassCard>
@@ -413,10 +1152,9 @@ const InventoryManagement = ({ dark }) => {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className={`px-3 py-1 rounded-lg text-sm ${
-                                dark
-                                    ? 'bg-white/10 text-white border-white/20'
-                                    : 'bg-gray-100 text-gray-900 border-gray-200'
+                            className={`px-3 py-1 rounded-lg text-sm ${dark
+                                ? 'bg-white/10 text-white border-white/20'
+                                : 'bg-gray-100 text-gray-900 border-gray-200'
                             } border focus:outline-none`}
                         >
                             {categories.map(cat => (
@@ -430,29 +1168,21 @@ const InventoryManagement = ({ dark }) => {
                     <table className="w-full">
                         <thead>
                         <tr className={`border-b ${dark ? 'border-white/10' : 'border-gray-200'}`}>
-                            <th className={`text-left py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-left py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Produkt</th>
-                            <th className={`text-left py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-left py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Kategorie</th>
-                            <th className={`text-center py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-center py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Bestand</th>
-                            <th className={`text-center py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-center py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Min. Bestand</th>
-                            <th className={`text-right py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-right py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Preis</th>
-                            <th className={`text-left py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-left py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Lieferant</th>
-                            <th className={`text-center py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-center py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Status</th>
-                            <th className={`text-right py-3 px-4 text-sm font-medium ${
-                                dark ? 'text-white/60' : 'text-gray-600'
+                            <th className={`text-right py-3 px-4 text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'
                             }`}>Aktionen</th>
                         </tr>
                         </thead>
@@ -460,24 +1190,21 @@ const InventoryManagement = ({ dark }) => {
                         {filteredProducts.map((product) => (
                             <tr
                                 key={product.id}
-                                className={`border-b ${
-                                    dark ? 'border-white/5 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'
+                                className={`border-b ${dark ? 'border-white/5 hover:bg-white/5' : 'border-gray-100 hover:bg-gray-50'
                                 } transition-colors`}
                             >
                                 <td className={`py-3 px-4 ${dark ? 'text-white' : 'text-gray-900'}`}>
                                     {product.name}
                                 </td>
                                 <td className={`py-3 px-4`}>
-                                        <span className={`px-2 py-1 text-xs rounded-full ${
-                                            dark ? 'bg-white/10 text-white/80' : 'bg-gray-100 text-gray-700'
+                                        <span className={`px-2 py-1 text-xs rounded-full ${dark ? 'bg-white/10 text-white/80' : 'bg-gray-100 text-gray-700'
                                         }`}>
                                             {product.category}
                                         </span>
                                 </td>
-                                <td className={`py-3 px-4 text-center font-medium ${
-                                    product.status === 'critical' ? 'text-red-500' :
-                                        product.status === 'low' ? 'text-yellow-500' :
-                                            dark ? 'text-white' : 'text-gray-900'
+                                <td className={`py-3 px-4 text-center font-medium ${product.status === 'critical' ? 'text-red-500' :
+                                    product.status === 'low' ? 'text-yellow-500' :
+                                        dark ? 'text-white' : 'text-gray-900'
                                 }`}>
                                     {product.stock}
                                 </td>
@@ -491,12 +1218,11 @@ const InventoryManagement = ({ dark }) => {
                                     {product.supplier}
                                 </td>
                                 <td className="py-3 px-4 text-center">
-                                        <span className={`px-2 py-1 text-xs rounded-full ${
-                                            product.status === 'critical'
-                                                ? 'bg-red-500/20 text-red-500'
-                                                : product.status === 'low'
-                                                    ? 'bg-yellow-500/20 text-yellow-500'
-                                                    : 'bg-green-500/20 text-green-500'
+                                        <span className={`px-2 py-1 text-xs rounded-full ${product.status === 'critical'
+                                            ? 'bg-red-500/20 text-red-500'
+                                            : product.status === 'low'
+                                                ? 'bg-yellow-500/20 text-yellow-500'
+                                                : 'bg-green-500/20 text-green-500'
                                         }`}>
                                             {product.status === 'critical' ? 'Kritisch' :
                                                 product.status === 'low' ? 'Niedrig' : 'OK'}
@@ -504,13 +1230,11 @@ const InventoryManagement = ({ dark }) => {
                                 </td>
                                 <td className="py-3 px-4 text-right">
                                     <div className="flex items-center justify-end space-x-1">
-                                        <button className={`p-1 rounded ${
-                                            dark ? 'hover:bg-white/10' : 'hover:bg-gray-200'
+                                        <button className={`p-1 rounded ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-200'
                                         }`}>
                                             <Edit className="w-4 h-4" />
                                         </button>
-                                        <button className={`p-1 rounded ${
-                                            dark ? 'hover:bg-white/10' : 'hover:bg-gray-200'
+                                        <button className={`p-1 rounded ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-200'
                                         }`}>
                                             <ShoppingCart className="w-4 h-4" />
                                         </button>
@@ -551,10 +1275,9 @@ const AnalyticsReporting = ({ dark }) => {
                             <button
                                 key={period}
                                 onClick={() => setSelectedPeriod(period)}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                    selectedPeriod === period
-                                        ? dark ? 'bg-white text-black' : 'bg-white text-gray-900 shadow-sm'
-                                        : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${selectedPeriod === period
+                                    ? dark ? 'bg-white text-black' : 'bg-white text-gray-900 shadow-sm'
+                                    : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             >
                                 {period === 'day' ? 'Tag' :
@@ -563,8 +1286,7 @@ const AnalyticsReporting = ({ dark }) => {
                             </button>
                         ))}
                     </div>
-                    <button className={`px-4 py-2 rounded-lg ${
-                        dark ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-100 hover:bg-gray-200'
+                    <button className={`px-4 py-2 rounded-lg ${dark ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-100 hover:bg-gray-200'
                     } transition-colors`}>
                         <Download className="w-4 h-4 inline mr-2" />
                         Export
@@ -586,8 +1308,7 @@ const AnalyticsReporting = ({ dark }) => {
                             <span className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
                                 {metric.label}
                             </span>
-                            <div className={`flex items-center space-x-1 text-sm ${
-                                metric.change > 0 ? 'text-green-500' : 'text-red-500'
+                            <div className={`flex items-center space-x-1 text-sm ${metric.change > 0 ? 'text-green-500' : 'text-red-500'
                             }`}>
                                 {metric.change > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                                 <span>{Math.abs(metric.change)}%</span>
@@ -597,14 +1318,6 @@ const AnalyticsReporting = ({ dark }) => {
                             {key === 'revenue' ? `€${metric.value.toLocaleString()}` :
                                 key === 'rating' ? metric.value : metric.value.toLocaleString()}
                         </p>
-                        <div className="mt-3">
-                            <MiniChart
-                                data={metric.data}
-                                color={metric.change > 0 ? 'green' : 'red'}
-                                height={40}
-                                dark={dark}
-                            />
-                        </div>
                     </GlassCard>
                 ))}
             </div>
@@ -640,15 +1353,13 @@ const AnalyticsReporting = ({ dark }) => {
                             { name: 'Bartpflege', bookings: 124, revenue: 3100, growth: 8.7 },
                             { name: 'Dauerwelle', bookings: 23, revenue: 2530, growth: -12.3 }
                         ].map((service, idx) => (
-                            <div key={idx} className={`p-3 rounded-lg ${
-                                dark ? 'bg-white/5' : 'bg-gray-50'
+                            <div key={idx} className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'
                             }`}>
                                 <div className="flex items-center justify-between mb-2">
                                     <span className={`font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
                                         {service.name}
                                     </span>
-                                    <div className={`flex items-center space-x-1 text-sm ${
-                                        service.growth > 0 ? 'text-green-500' : 'text-red-500'
+                                    <div className={`flex items-center space-x-1 text-sm ${service.growth > 0 ? 'text-green-500' : 'text-red-500'
                                     }`}>
                                         {service.growth > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                                         <span>{Math.abs(service.growth)}%</span>
@@ -712,9 +1423,8 @@ const AnalyticsReporting = ({ dark }) => {
                                 </div>
                                 <div className={`h-2 ${dark ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
                                     <div
-                                        className={`h-full rounded-full transition-all duration-500 ${
-                                            slot.load > 80 ? 'bg-red-500' :
-                                                slot.load > 60 ? 'bg-yellow-500' : 'bg-green-500'
+                                        className={`h-full rounded-full transition-all duration-500 ${slot.load > 80 ? 'bg-red-500' :
+                                            slot.load > 60 ? 'bg-yellow-500' : 'bg-green-500'
                                         }`}
                                         style={{ width: `${slot.load}%` }}
                                     />
@@ -809,11 +1519,10 @@ const AnalyticsReporting = ({ dark }) => {
                                 </div>
                                 <div className={`h-2 ${dark ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
                                     <div
-                                        className={`h-full rounded-full ${
-                                            source.color === 'blue' ? 'bg-blue-500' :
-                                                source.color === 'purple' ? 'bg-purple-500' :
-                                                    source.color === 'green' ? 'bg-green-500' :
-                                                        'bg-orange-500'
+                                        className={`h-full rounded-full ${source.color === 'blue' ? 'bg-blue-500' :
+                                            source.color === 'purple' ? 'bg-purple-500' :
+                                                source.color === 'green' ? 'bg-green-500' :
+                                                    'bg-orange-500'
                                         }`}
                                         style={{ width: `${source.percentage}%` }}
                                     />
@@ -1048,8 +1757,7 @@ const TeamManagement = ({ dark }) => {
                             {member.skills.map((skill, idx) => (
                                 <span
                                     key={idx}
-                                    className={`px-2 py-1 text-xs rounded-full ${
-                                        dark ? 'bg-white/10 text-white/80' : 'bg-gray-100 text-gray-700'
+                                    className={`px-2 py-1 text-xs rounded-full ${dark ? 'bg-white/10 text-white/80' : 'bg-gray-100 text-gray-700'
                                     }`}
                                 >
                                     {skill}
@@ -1086,8 +1794,7 @@ const TeamManagement = ({ dark }) => {
                             </div>
                             <button
                                 onClick={() => setSelectedMember(null)}
-                                className={`p-2 rounded-lg ${
-                                    dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                                className={`p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
                                 } transition-colors`}
                             >
                                 <X className="w-5 h-5" />
@@ -1107,770 +1814,60 @@ const TeamManagement = ({ dark }) => {
                                 <h4 className={`text-sm font-medium ${dark ? 'text-white/60' : 'text-gray-600'} mb-3`}>
                                     Nächster Urlaub
                                 </h4>
-                                <pimport React, { useState, useEffect, useRef } from 'react';
-                                import {
-                                LayoutDashboard, Calendar, Users, Scissors, Package, CreditCard,
-                                BarChart3, Settings, Bell, Search, Plus, Filter, ChevronRight,
-                                TrendingUp, TrendingDown, Clock, Star, AlertCircle, CheckCircle,
-                                DollarSign, UserPlus, Eye, MoreHorizontal, Sun, Moon, Menu, X,
-                                Home, MessageSquare, FileText, LogOut, ChevronDown, Phone, Mail,
-                                MapPin, Target, RefreshCw, Download, ArrowRight, Percent, Activity,
-                                Shield, Zap, Award, BookOpen, Briefcase, Coffee, Heart, Image,
-                                Smartphone, Repeat, Gift, Timer, PieChart, BarChart, CalendarDays,
-                                UserCheck, ShoppingCart, Palette, Camera, Instagram, Facebook, Globe,
-                                Sparkles, MousePointer, UserX, ArrowUpRight, ArrowDownRight, Cpu, Wifi,
-                                HelpCircle, ChevronLeft, Inbox, Archive, Trash2, Send, PlayCircle,
-                                PauseCircle, AlertTriangle, CheckCircle2, XCircle, Info, Database,
-                                Server, Lock, Unlock, Share2, Copy, Edit, Save, ZoomIn, Building2,
-                                Banknote, Receipt, Gauge, Layers, Grid3x3, List, BarChart2, LineChart,
-                                Bot, Brain, Lightbulb, Trophy, Medal, Crown, Gem, Wallet,
-                                Calculator, Printer, QrCode, Scan, WifiOff, Battery, BatteryLow,
-                                Volume2, VolumeX, Mic, Video, Headphones, Monitor, Tablet, Watch,
-                                CloudRain, CloudSnow, Wind, Droplets, Thermometer, Sunrise, Sunset,
-                                Brush, Droplet, Sparkle, CircleDollarSign,
-                                MessageCircle, ThumbsUp, AlertOctagon, CheckSquare, Square, MoreVertical,
-                                Tag, Bookmark, Clock3, Clock4, Clock5,
-                                Euro, Hash, BarChart4,
-                                FileBarChart, FileSpreadsheet, Folder, FolderOpen, File,
-                                Coins, HandCoins, PiggyBank,
-                                ShoppingBag, Store, Package2, Truck, PackageCheck,
-                                UserCircle, UserCog, UserMinus, UsersRound, Contact,
-                                CalendarCheck, CalendarClock, CalendarX, CalendarRange,
-                                BellRing, BellOff, BellPlus, Megaphone, Radio,
-                                Navigation, MessageSquareText,
-                                ArrowLeft, History, MapPinned, Navigation2, ShieldCheck,
-                                Fingerprint, FolderLock, ClipboardCheck,
-                                Beaker, TestTube, Wand2, CircleCheckBig,
-                                CalendarHeart, PartyPopper, Cake,
-                                Music, Volume, PlaySquare,
-                                CheckCheck, CircleCheck, CircleX,
-                                Signal, BatteryCharging, Pause, Play, SkipForward,
-                                Link, Link2, ExternalLink, Maximize2, Minimize2,
-                                BookmarkPlus, BookmarkMinus, BookmarkCheck,
-                                FolderPlus, FolderMinus, FolderCheck,
-                                Ticket,
-                                Command, Option,
-                                Sliders, ToggleLeft, ToggleRight,
-                                Bluetooth, Cast, Flashlight,
-                                GitBranch, GitCommit, GitMerge,
-                                Infinity, Key, Keyboard,
-                                Landmark, Languages, Laptop,
-                                LifeBuoy, Loader,
-                                MessagesSquare, MicOff, Minimize,
-                                Mountain, Move, Network,
-                                Paperclip, PenTool,
-                                Power, PowerOff, Presentation,
-                                Puzzle, RefreshCcw,
-                                Repeat2, Rewind, Rocket,
-                                RotateCcw, RotateCw, Rss,
-                                ScanLine, Share,
-                                ShieldAlert, ShieldOff, Shuffle,
-                                Sidebar, SkipBack, Slash,
-                                Smile, Snowflake, Speaker,
-                                StopCircle,
-                                Sword,
-                                Table, Terminal,
-                                Trash,
-                                TreePine, Triangle, Tv,
-                                Type, Umbrella, Underline,
-                                Upload, User,
-                                VideoOff, Voicemail,
-                                Volume1,
-                                Wand,
-                                Waves, Webcam,
-                                XSquare,
-                                Youtube,
-                                ZoomOut, ChevronUp, ChevronsUp,
-                                ChevronsDown, ChevronsLeft, ChevronsRight,
-                                ArrowUp, ArrowDown, ArrowLeftRight,
-                                ArrowRightLeft, ArrowUpDown, CornerDownLeft,
-                                CornerDownRight, CornerLeftDown, CornerLeftUp,
-                                CornerRightDown, CornerRightUp, CornerUpLeft,
-                                CornerUpRight, MoveDown, MoveLeft,
-                                MoveRight, MoveUp
-                            } from 'lucide-react';
-
-                                // Enhanced Glass Card Component with animations
-                                const GlassCard = ({ children, className = '', hover = false, onClick, padding = true, dark, blur = 'md', depth = 1, animate = false }) => {
-                                const depthStyles = {
-                                1: dark ? 'bg-white/5 border-white/10' : 'bg-white border-gray-200 shadow-sm',
-                                2: dark ? 'bg-white/10 border-white/20' : 'bg-white border-gray-300 shadow-md',
-                                3: dark ? 'bg-white/15 border-white/30' : 'bg-white border-gray-400 shadow-lg'
-                            };
-
-                                return (
-                                <div
-                                onClick={onClick}
-                                className={`
-                ${depthStyles[depth]}
-                backdrop-blur-${blur} border rounded-xl
-                ${hover
-                                    ? dark
-                                        ? 'hover:bg-white/10 hover:border-white/20 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
-                                        : 'hover:shadow-xl hover:border-gray-300 hover:scale-[1.02] active:scale-[0.98]'
-                                    : ''
-                                }
-                transition-all duration-300
-                ${onClick ? 'cursor-pointer' : ''}
-                ${padding ? 'p-4 md:p-6' : ''}
-                ${animate ? 'animate-fade-in' : ''}
-                ${className}
-            `}
-                            >
-                                {children}
+                                <p className={`${dark ? 'text-white' : 'text-gray-900'}`}>
+                                    {selectedMember.nextVacation}
+                                </p>
                             </div>
-                            );
-                            };
-
-                            // Advanced Chart Component with interactions
-                            const AdvancedChart = ({ type = 'line', data, labels, dark, height = 200, interactive = true }) => {
-                            const canvasRef = useRef(null);
-                            const [hoveredIndex, setHoveredIndex] = useState(null);
-
-                            useEffect(() => {
-                            const canvas = canvasRef.current;
-                            if (!canvas) return;
-                            const ctx = canvas.getContext('2d');
-                            const rect = canvas.getBoundingClientRect();
-                            const width = rect.width;
-                            const height = rect.height;
-
-                            // Set canvas size
-                            canvas.width = width;
-                            canvas.height = height;
-
-                            // Clear canvas
-                            ctx.clearRect(0, 0, width, height);
-
-                            // Draw grid
-                            ctx.strokeStyle = dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-                            ctx.lineWidth = 1;
-
-                            // Horizontal grid lines
-                            for (let i = 0; i <= 5; i++) {
-                            const y = (height / 5) * i;
-                            ctx.beginPath();
-                            ctx.moveTo(0, y);
-                            ctx.lineTo(width, y);
-                            ctx.stroke();
-                        }
-
-                            // Vertical grid lines
-                            for (let i = 0; i <= data.length - 1; i++) {
-                            const x = (width / (data.length - 1)) * i;
-                            ctx.beginPath();
-                            ctx.moveTo(x, 0);
-                            ctx.lineTo(x, height);
-                            ctx.stroke();
-                        }
-
-                            if (type === 'line' && data && data.length > 0) {
-                            const gradient = ctx.createLinearGradient(0, 0, 0, height);
-                            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-                            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
-
-                            ctx.fillStyle = gradient;
-                            ctx.strokeStyle = '#3b82f6';
-                            ctx.lineWidth = 2;
-
-                            // Draw area
-                            ctx.beginPath();
-                            data.forEach((value, index) => {
-                            const x = (width / (data.length - 1)) * index;
-                            const y = height - (value / Math.max(...data)) * height * 0.9;
-
-                            if (index === 0) {
-                            ctx.moveTo(x, y);
-                        } else {
-                            ctx.lineTo(x, y);
-                        }
-                        });
-                            ctx.lineTo(width, height);
-                            ctx.lineTo(0, height);
-                            ctx.closePath();
-                            ctx.fill();
-
-                            // Draw line
-                            ctx.beginPath();
-                            data.forEach((value, index) => {
-                            const x = (width / (data.length - 1)) * index;
-                            const y = height - (value / Math.max(...data)) * height * 0.9;
-
-                            if (index === 0) {
-                            ctx.moveTo(x, y);
-                        } else {
-                            ctx.lineTo(x, y);
-                        }
-                        });
-                            ctx.stroke();
-
-                            // Draw points and values
-                            data.forEach((value, index) => {
-                            const x = (width / (data.length - 1)) * index;
-                            const y = height - (value / Math.max(...data)) * height * 0.9;
-
-                            // Draw point
-                            ctx.beginPath();
-                            ctx.arc(x, y, hoveredIndex === index ? 6 : 4, 0, Math.PI * 2);
-                            ctx.fillStyle = '#3b82f6';
-                            ctx.fill();
-                            ctx.strokeStyle = dark ? '#000' : '#fff';
-                            ctx.lineWidth = 2;
-                            ctx.stroke();
-
-                            // Draw value on hover
-                            if (hoveredIndex === index) {
-                            ctx.fillStyle = dark ? '#fff' : '#000';
-                            ctx.font = '12px Inter, system-ui, sans-serif';
-                            ctx.textAlign = 'center';
-                            ctx.fillText(value.toLocaleString(), x, y - 10);
-                        }
-                        });
-                        } else if (type === 'bar') {
-                            const barWidth = width / data.length * 0.8;
-                            const spacing = width / data.length * 0.2;
-
-                            data.forEach((value, index) => {
-                            const x = index * (barWidth + spacing) + spacing / 2;
-                            const barHeight = (value / Math.max(...data)) * height * 0.9;
-                            const y = height - barHeight;
-
-                            // Bar gradient
-                            const barGradient = ctx.createLinearGradient(0, y, 0, height);
-                            barGradient.addColorStop(0, hoveredIndex === index ? '#3b82f6' : '#60a5fa');
-                            barGradient.addColorStop(1, hoveredIndex === index ? '#1e40af' : '#3b82f6');
-                            ctx.fillStyle = barGradient;
-                            ctx.fillRect(x, y, barWidth, barHeight);
-
-                            // Value on top
-                            if (hoveredIndex === index) {
-                            ctx.fillStyle = dark ? '#fff' : '#000';
-                            ctx.font = '12px Inter, system-ui, sans-serif';
-                            ctx.textAlign = 'center';
-                            ctx.fillText(value.toLocaleString(), x + barWidth / 2, y - 5);
-                        }
-                        });
-                        }
-
-                            // Labels
-                            if (labels) {
-                            ctx.fillStyle = dark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)';
-                            ctx.font = '11px Inter, system-ui, sans-serif';
-                            ctx.textAlign = 'center';
-                            labels.forEach((label, index) => {
-                            const x = type === 'bar'
-                            ? index * (width / data.length) + (width / data.length) / 2
-                            : (width / (labels.length - 1)) * index;
-                            ctx.fillText(label, x, height + 15);
-                        });
-                        }
-                        }, [data, type, dark, height, labels, hoveredIndex]);
-
-                            const handleMouseMove = (e) => {
-                            if (!interactive) return;
-                            const canvas = canvasRef.current;
-                            const rect = canvas.getBoundingClientRect();
-                            const x = e.clientX - rect.left;
-                            const segmentWidth = rect.width / data.length;
-                            const index = Math.floor(x / segmentWidth);
-                            setHoveredIndex(index >= 0 && index < data.length ? index : null);
-                        };
-
-                            return (
-                            <div className="relative w-full" style={{ height: height + 20 }}>
-                            <canvas
-                                ref={canvasRef}
-                                className="w-full cursor-crosshair"
-                                style={{ height: height + 20 }}
-                                onMouseMove={handleMouseMove}
-                                onMouseLeave={() => setHoveredIndex(null)}
-                            />
-                        </div>
-                        );
-                        };
-
-                        // Enhanced KPI Card with animations
-                        const KPICard = ({ title, value, target, icon: Icon, color = 'blue', dark, trend, subtitle, comparison }) => {
-                        const percentage = target ? Math.min((value / target) * 100, 100) : 0;
-                        const radius = 45;
-                        const circumference = 2 * Math.PI * radius;
-                        const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
-                        const colorClasses = {
-                        blue: 'text-blue-500',
-                        green: 'text-green-500',
-                        purple: 'text-purple-500',
-                        orange: 'text-orange-500',
-                        red: 'text-red-500',
-                        yellow: 'text-yellow-500',
-                        pink: 'text-pink-500',
-                        teal: 'text-teal-500'
-                    };
-
-                        const gradients = {
-                        blue: ['#3B82F6', '#1E40AF'],
-                        green: ['#10B981', '#059669'],
-                        purple: ['#8B5CF6', '#6D28D9'],
-                        orange: ['#F59E0B', '#D97706'],
-                        red: ['#EF4444', '#DC2626'],
-                        yellow: ['#F59E0B', '#D97706'],
-                        pink: ['#EC4899', '#DB2777'],
-                        teal: ['#14B8A6', '#0D9488']
-                    };
-
-                        return (
-                        <GlassCard dark={dark} hover className="group">
-                        <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                                <div className="flex items-center space-x-2 mb-3">
-                                    <div className={`p-2 rounded-lg ${
-                                        dark ? 'bg-white/10' : 'bg-gray-100'
-                                    } group-hover:scale-110 transition-transform`}>
-                                        <Icon className={`w-5 h-5 ${colorClasses[color]}`} />
-                                    </div>
-                                    <h3 className={`text-sm font-medium ${dark ? 'text-white/80' : 'text-gray-700'}`}>
-                                        {title}
-                                    </h3>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className={`text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                        {typeof value === 'number' ? value.toLocaleString() : value}
-                                    </p>
-                                    {subtitle && (
-                                        <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'}`}>
-                                            {subtitle}
-                                        </p>
-                                    )}
-                                    {target && (
-                                        <p className={`text-xs ${dark ? 'text-white/40' : 'text-gray-500'}`}>
-                                            Ziel: {target.toLocaleString()}
-                                        </p>
-                                    )}
-                                    {trend !== undefined && (
-                                        <div className={`flex items-center space-x-1 text-sm ${
-                                            trend > 0 ? 'text-green-500' : 'text-red-500'
-                                        }`}>
-                                            {trend > 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                                            <span className="font-medium">{Math.abs(trend)}%</span>
-                                            {comparison && (
-                                                <span className={`text-xs ${dark ? 'text-white/40' : 'text-gray-500'}`}>
-                                        vs. {comparison}
-                                    </span>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            {target && (
-                                <div className="relative">
-                                    <svg width="110" height="110" className="transform -rotate-90">
-                                        <circle
-                                            cx="55"
-                                            cy="55"
-                                            r={radius}
-                                            stroke={dark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}
-                                            strokeWidth="8"
-                                            fill="none"
-                                        />
-                                        <circle
-                                            cx="55"
-                                            cy="55"
-                                            r={radius}
-                                            stroke={`url(#gradient-${color}-${title})`}
-                                            strokeWidth="8"
-                                            fill="none"
-                                            strokeDasharray={circumference}
-                                            strokeDashoffset={strokeDashoffset}
-                                            strokeLinecap="round"
-                                            className="transition-all duration-1000"
-                                        />
-                                        <defs>
-                                            <linearGradient id={`gradient-${color}-${title}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                                                <stop offset="0%" stopColor={gradients[color][0]} />
-                                                <stop offset="100%" stopColor={gradients[color][1]} />
-                                            </linearGradient>
-                                        </defs>
-                                    </svg>
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="text-center">
-                                <span className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                    {Math.round(percentage)}%
-                                </span>
-                                            <span className={`text-xs block ${dark ? 'text-white/60' : 'text-gray-600'}`}>
-                                    erreicht
-                                </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     </GlassCard>
-                    );
-                    };
-
-                    // Professional Sidebar Component
-                    const Sidebar = ({ dark, collapsed, setCollapsed, activeView, setActiveView }) => {
-                    const navigationSections = [
-                {
-                    title: 'Hauptmenü',
-                    items: [
-                { id: 'overview', icon: LayoutDashboard, label: 'Übersicht', badge: null },
-                { id: 'appointments', icon: Calendar, label: 'Termine', badge: '8' },
-                { id: 'customers', icon: Users, label: 'Kunden', badge: '276' },
-                { id: 'services', icon: Scissors, label: 'Services', badge: null }
-                    ]
-                },
-                {
-                    title: 'Geschäft',
-                    items: [
-                { id: 'finance', icon: CreditCard, label: 'Finanzen', badge: null },
-                { id: 'inventory', icon: Package, label: 'Inventar', badge: '!', badgeType: 'warning' },
-                { id: 'invoices', icon: Receipt, label: 'Rechnungen', badge: '3' },
-                { id: 'reports', icon: FileBarChart, label: 'Berichte', badge: 'NEU', badgeType: 'success' }
-                    ]
-                },
-                {
-                    title: 'Marketing',
-                    items: [
-                { id: 'analytics', icon: BarChart3, label: 'Analytics', badge: null },
-                { id: 'marketing', icon: Megaphone, label: 'Kampagnen', badge: '2' },
-                { id: 'social', icon: Share2, label: 'Social Media', badge: null },
-                { id: 'reviews', icon: Star, label: 'Bewertungen', badge: '5.0', badgeType: 'success' }
-                    ]
-                },
-                {
-                    title: 'Verwaltung',
-                    items: [
-                { id: 'team', icon: UsersRound, label: 'Team', badge: null },
-                { id: 'settings', icon: Settings, label: 'Einstellungen', badge: null },
-                { id: 'ai-insights', icon: Brain, label: 'AI Insights', badge: 'PRO', badgeType: 'pro' },
-                { id: 'help', icon: HelpCircle, label: 'Hilfe', badge: null }
-                    ]
-                }
-                    ];
-
-                    return (
-                    <aside className={`
-            fixed left-0 top-0 h-full z-40 transition-all duration-300
-            ${dark ? 'bg-black/90' : 'bg-white'}
-            backdrop-blur-xl border-r
-            ${dark ? 'border-white/10' : 'border-gray-200'}
-            ${collapsed ? 'w-20' : 'w-72'}
-            hidden lg:block
-        `}>
-                    <div className="flex flex-col h-full">
-                        {/* Header */}
-                        <div className={`p-6 border-b ${dark ? 'border-white/10' : 'border-gray-200'}`}>
-                            <div className="flex items-center justify-between">
-                                {!collapsed && (
-                                    <div className="flex items-center space-x-3">
-                                        <div className={`w-12 h-12 rounded-2xl ${
-                                            dark ? 'bg-gradient-to-br from-blue-500 to-purple-600' : 'bg-gradient-to-br from-blue-400 to-purple-500'
-                                        } flex items-center justify-center shadow-lg`}>
-                                            <Scissors className="w-6 h-6 text-white" />
-                                        </div>
-                                        <div>
-                                            <h1 className={`text-xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                                SalonPro
-                                            </h1>
-                                            <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
-                                                Enterprise Edition
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
-                                <button
-                                    onClick={() => setCollapsed(!collapsed)}
-                                    className={`${dark ? 'text-white/60 hover:text-white' : 'text-gray-600 hover:text-gray-900'} 
-                                       p-2 rounded-lg hover:bg-white/10 transition-colors`}
-                                >
-                                    {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Navigation */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
-                            {navigationSections.map((section, sectionIdx) => (
-                                <div key={sectionIdx}>
-                                    {!collapsed && (
-                                        <p className={`text-xs font-medium uppercase tracking-wider mb-2 px-3 ${
-                                            dark ? 'text-white/40' : 'text-gray-500'
-                                        }`}>
-                                            {section.title}
-                                        </p>
-                                    )}
-                                    <nav className="space-y-1">
-                                        {section.items.map(item => (
-                                            <button
-                                                key={item.id}
-                                                onClick={() => setActiveView(item.id)}
-                                                className={`
-                                            w-full flex items-center justify-between p-3 rounded-xl
-                                            transition-all duration-200 group relative
-                                            ${activeView === item.id
-                                                    ? dark
-                                                        ? 'bg-white/10 text-white shadow-lg'
-                                                        : 'bg-gradient-to-r from-blue-50 to-purple-50 text-gray-900 shadow-md'
-                                                    : dark
-                                                        ? 'text-white/60 hover:text-white hover:bg-white/5'
-                                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                                                }
-                                        `}
-                                            >
-                                                <div className="flex items-center space-x-3">
-                                                    <item.icon className={`w-5 h-5 flex-shrink-0 ${
-                                                        activeView === item.id ? 'text-blue-500' : ''
-                                                    }`} />
-                                                    {!collapsed && <span className="font-medium">{item.label}</span>}
-                                                </div>
-                                                {!collapsed && item.badge && (
-                                                    <span className={`
-                                                px-2 py-0.5 text-xs font-medium rounded-full
-                                                ${item.badgeType === 'success'
-                                                        ? 'bg-green-500 text-white'
-                                                        : item.badgeType === 'warning'
-                                                            ? 'bg-yellow-500 text-white animate-pulse'
-                                                            : item.badgeType === 'pro'
-                                                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                                                                : dark
-                                                                    ? 'bg-white/20 text-white'
-                                                                    : 'bg-gray-200 text-gray-700'}
-                                            `}>
-                                                {item.badge}
-                                            </span>
-                                                )}
-                                                {activeView === item.id && (
-                                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
-                                                )}
-                                            </button>
-                                        ))}
-                                    </nav>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* User Profile & Actions */}
-                        <div className={`p-4 border-t ${dark ? 'border-white/10' : 'border-gray-200'} space-y-3`}>
-                            {/* Quick Stats */}
-                            {!collapsed && (
-                                <div className={`p-3 rounded-lg ${dark ? 'bg-white/5' : 'bg-gray-50'}`}>
-                                    <div className="flex items-center justify-between mb-2">
-                                <span className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
-                                    Heute
-                                </span>
-                                        <span className={`text-sm font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                    €1,247
-                                </span>
-                                    </div>
-                                    <div className={`h-1.5 ${dark ? 'bg-white/10' : 'bg-gray-200'} rounded-full overflow-hidden`}>
-                                        <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
-                                             style={{ width: '83%' }} />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* User Profile */}
-                            <button className={`w-full p-3 rounded-xl ${
-                                dark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
-                            } transition-colors flex items-center ${
-                                collapsed ? 'justify-center' : 'space-x-3'
-                            }`}>
-                                <div className="relative">
-                                    <img
-                                        src="https://ui-avatars.com/api/?name=Max+Mustermann&background=3b82f6&color=fff"
-                                        alt="Profile"
-                                        className="w-10 h-10 rounded-full"
-                                    />
-                                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-black" />
-                                </div>
-                                {!collapsed && (
-                                    <>
-                                        <div className="flex-1 text-left">
-                                            <p className={`text-sm font-medium ${dark ? 'text-white' : 'text-gray-900'}`}>
-                                                Max Mustermann
-                                            </p>
-                                            <p className={`text-xs ${dark ? 'text-white/60' : 'text-gray-600'}`}>
-                                                Inhaber & Stylist
-                                            </p>
-                                        </div>
-                                        <LogOut className={`w-4 h-4 ${dark ? 'text-white/40' : 'text-gray-400'}`} />
-                                    </>
-                                )}
-                            </button>
-                        </div>
-                    </div>
-                </aside>
-            );
-            };
-
-            // Mobile Navigation
-            const MobileNav = ({ activeView, setActiveView, dark }) => {
-            const mainItems = [
-        { id: 'overview', icon: Home, label: 'Start' },
-        { id: 'appointments', icon: Calendar, label: 'Termine' },
-        { id: 'quick-booking', icon: Plus, label: '', isAction: true },
-        { id: 'customers', icon: Users, label: 'Kunden' },
-        { id: 'more', icon: MoreHorizontal, label: 'Mehr' }
-            ];
-
-            return (
-            <div className={`fixed bottom-0 left-0 right-0 z-50 md:hidden ${
-            dark ? 'bg-black/90' : 'bg-white/90'
-        } backdrop-blur-xl border-t ${
-            dark ? 'border-white/10' : 'border-gray-200'
-        } safe-area-bottom`}>
-            <div className="grid grid-cols-5 items-center">
-                {mainItems.map((item) => (
-                    <button
-                        key={item.id}
-                        onClick={() => setActiveView(item.id)}
-                        className={`
-                            relative flex flex-col items-center justify-center py-2
-                            ${item.isAction
-                            ? ''
-                            : activeView === item.id
-                                ? dark ? 'text-white' : 'text-gray-900'
-                                : dark ? 'text-white/40' : 'text-gray-400'
-                        }
-                            transition-all duration-200
-                        `}
-                    >
-                        {item.isAction ? (
-                            <div className={`
-                                absolute -top-6 p-3 rounded-full shadow-lg
-                                ${dark ? 'bg-gradient-to-r from-blue-600 to-purple-600' : 'bg-gradient-to-r from-blue-500 to-purple-500'}
-                                text-white transform hover:scale-110 transition-transform
-                            `}>
-                                <item.icon className="w-6 h-6" />
-                            </div>
-                        ) : (
-                            <>
-                                <item.icon className="w-5 h-5 mb-1" />
-                                <span className="text-xs">{item.label}</span>
-                                {activeView === item.id && (
-                                    <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full" />
-                                )}
-                            </>
-                        )}
-                    </button>
-                ))}
-            </div>
+                </div>
+            )}
         </div>
     );
 };
 
-// Enhanced Header Component
-const Header = ({ dark, setDarkMode, title, subtitle, showNotifications, setShowNotifications, notificationCount }) => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [showSearch, setShowSearch] = useState(false);
+const MiniChart = ({ data, color, height, dark }) => {
+    const canvasRef = useRef(null);
 
-    return (
-        <header className={`
-            sticky top-0 z-30 px-4 md:px-8 py-4
-            ${dark ? 'bg-black/80' : 'bg-white/90'}
-            backdrop-blur-xl border-b
-            ${dark ? 'border-white/10' : 'border-gray-200'}
-        `}>
-            <div className="flex items-center justify-between">
-                <div className="flex-1">
-                    <h1 className={`text-2xl md:text-3xl font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>
-                        {title}
-                    </h1>
-                    {subtitle && (
-                        <p className={`text-sm ${dark ? 'text-white/60' : 'text-gray-600'} mt-1`}>
-                            {subtitle}
-                        </p>
-                    )}
-                </div>
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
 
-                <div className="flex items-center space-x-2 md:space-x-4">
-                    {/* Search - Desktop */}
-                    <div className={`hidden md:block relative`}>
-                        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
-                            dark ? 'text-white/40' : 'text-gray-400'
-                        }`} />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Suchen..."
-                            className={`pl-10 pr-4 py-2 rounded-xl w-64 ${
-                                dark
-                                    ? 'bg-white/5 border-white/10 text-white placeholder-white/40'
-                                    : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400'
-                            } border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all`}
-                        />
-                    </div>
+        ctx.clearRect(0, 0, width, height);
 
-                    {/* Search - Mobile */}
-                    <button
-                        onClick={() => setShowSearch(!showSearch)}
-                        className={`md:hidden p-2 rounded-lg ${
-                            dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
-                        } transition-colors`}
-                    >
-                        <Search className={`w-5 h-5 ${dark ? 'text-white' : 'text-gray-700'}`} />
-                    </button>
+        if (data && data.length > 0) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, color === 'green' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)');
+            gradient.addColorStop(1, color === 'green' ? 'rgba(16, 185, 129, 0.01)' : 'rgba(239, 68, 68, 0.01)');
 
-                    {/* Quick Actions */}
-                    <button className={`p-2 rounded-lg ${
-                        dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
-                    } transition-colors hidden md:block`}>
-                        <RefreshCw className={`w-5 h-5 ${dark ? 'text-white' : 'text-gray-700'}`} />
-                    </button>
+            ctx.fillStyle = gradient;
+            ctx.strokeStyle = color === 'green' ? '#10B981' : '#EF4444';
+            ctx.lineWidth = 2;
 
-                    {/* Theme Toggle */}
-                    <button
-                        onClick={() => setDarkMode(!dark)}
-                        className={`p-2 rounded-lg ${
-                            dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
-                        } transition-colors`}
-                    >
-                        {dark ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-gray-700" />}
-                    </button>
+            ctx.beginPath();
+            data.forEach((value, index) => {
+                const x = (width / (data.length - 1)) * index;
+                const y = height - (value / Math.max(...data)) * height * 0.9;
 
-                    {/* Notifications */}
-                    <button
-                        onClick={() => setShowNotifications(!showNotifications)}
-                        className={`relative p-2 rounded-lg ${
-                            dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
-                        } transition-colors`}
-                    >
-                        <Bell className={`w-5 h-5 ${dark ? 'text-white' : 'text-gray-700'}`} />
-                        {notificationCount > 0 && (
-                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                                {notificationCount > 9 ? '9+' : notificationCount}
-                            </div>
-                        )}
-                    </button>
-                </div>
-            </div>
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
 
-            {/* Mobile Search Bar */}
-            {showSearch && (
-                <div className="md:hidden mt-4">
-                    <div className="relative">
-                        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
-                            dark ? 'text-white/40' : 'text-gray-400'
-                        }`} />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Suchen..."
-                            className={`w-full pl-10 pr-4 py-3 rounded-xl ${
-                                dark
-                                    ? 'bg-white/5 border-white/10 text-white placeholder-white/40'
-                                    : 'bg-gray-100 border-gray-200 text-gray-900 placeholder-gray-400'
-                            } border focus:outline-none focus:ring-2 focus:ring-blue-500/50`}
-                            autoFocus
-                        />
-                    </div>
-                </div>
-            )}
-        </header>
-    );
+            ctx.lineTo(width, height);
+            ctx.lineTo(0, height);
+            ctx.closePath();
+            ctx.fill();
+        }
+    }, [data, color, dark]);
+
+    return <canvas ref={canvasRef} style={{ height: `${height}px`, width: '100%' }} />;
 };
 
 // Enhanced Overview Dashboard
@@ -1911,10 +1908,9 @@ const OverviewDashboard = ({ dark }) => {
                         <button
                             key={period}
                             onClick={() => setSelectedPeriod(period)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                selectedPeriod === period
-                                    ? dark ? 'bg-white text-black shadow-lg' : 'bg-white text-gray-900 shadow-md'
-                                    : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${selectedPeriod === period
+                                ? dark ? 'bg-white text-black shadow-lg' : 'bg-white text-gray-900 shadow-md'
+                                : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                             }`}
                         >
                             {period === 'today' ? 'Heute' :
@@ -1925,8 +1921,7 @@ const OverviewDashboard = ({ dark }) => {
                 </div>
                 <button
                     onClick={handleRefresh}
-                    className={`p-2 rounded-lg ${
-                        dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                    className={`p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
                     } transition-colors ${refreshing ? 'animate-spin' : ''}`}
                 >
                     <RefreshCw className={`w-5 h-5 ${dark ? 'text-white' : 'text-gray-700'}`} />
@@ -2041,8 +2036,7 @@ const OverviewDashboard = ({ dark }) => {
                             Umsatzentwicklung
                         </h3>
                         <div className="flex items-center space-x-2">
-                            <button className={`px-3 py-1 text-xs rounded-lg ${
-                                dark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-700'
+                            <button className={`px-3 py-1 text-xs rounded-lg ${dark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-700'
                             }`}>
                                 Details
                             </button>
@@ -2063,8 +2057,7 @@ const OverviewDashboard = ({ dark }) => {
                             Service Performance
                         </h3>
                         <div className="flex items-center space-x-2">
-                            <button className={`px-3 py-1 text-xs rounded-lg ${
-                                dark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-700'
+                            <button className={`px-3 py-1 text-xs rounded-lg ${dark ? 'bg-white/10 text-white' : 'bg-gray-100 text-gray-700'
                             }`}>
                                 Filter
                             </button>
@@ -2093,8 +2086,7 @@ const OverviewDashboard = ({ dark }) => {
                             { name: 'Sarah Schmidt', role: 'Stylistin', performance: 88, revenue: 6230, customers: 31 },
                             { name: 'Julia Weber', role: 'Coloristin', performance: 91, revenue: 7100, customers: 28 }
                         ].map((member, idx) => (
-                            <div key={idx} className={`p-4 rounded-xl ${
-                                dark ? 'bg-white/5' : 'bg-gray-50'
+                            <div key={idx} className={`p-4 rounded-xl ${dark ? 'bg-white/5' : 'bg-gray-50'
                             }`}>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
@@ -2160,15 +2152,13 @@ const OverviewDashboard = ({ dark }) => {
                             { icon: UserPlus, text: 'Neuer Kunde registriert', time: 'vor 45 Min', color: 'purple' },
                             { icon: MessageSquare, text: 'SMS Erinnerung gesendet', time: 'vor 1 Std', color: 'orange' }
                         ].map((activity, idx) => (
-                            <div key={idx} className={`flex items-start space-x-3 p-3 rounded-lg ${
-                                dark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
+                            <div key={idx} className={`flex items-start space-x-3 p-3 rounded-lg ${dark ? 'hover:bg-white/5' : 'hover:bg-gray-50'
                             } transition-colors cursor-pointer`}>
-                                <div className={`p-2 rounded-lg ${
-                                    activity.color === 'blue' ? 'bg-blue-500/20 text-blue-500' :
-                                        activity.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-500' :
-                                            activity.color === 'green' ? 'bg-green-500/20 text-green-500' :
-                                                activity.color === 'purple' ? 'bg-purple-500/20 text-purple-500' :
-                                                    'bg-orange-500/20 text-orange-500'
+                                <div className={`p-2 rounded-lg ${activity.color === 'blue' ? 'bg-blue-500/20 text-blue-500' :
+                                    activity.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-500' :
+                                        activity.color === 'green' ? 'bg-green-500/20 text-green-500' :
+                                            activity.color === 'purple' ? 'bg-purple-500/20 text-purple-500' :
+                                                'bg-orange-500/20 text-orange-500'
                                 }`}>
                                     <activity.icon className="w-4 h-4" />
                                 </div>
@@ -2206,15 +2196,14 @@ const OverviewDashboard = ({ dark }) => {
                             transition-all duration-200 hover:scale-105 active:scale-95
                         `}
                     >
-                        <action.icon className={`w-6 h-6 ${
-                            action.color === 'blue' ? 'text-blue-500' :
-                                action.color === 'green' ? 'text-green-500' :
-                                    action.color === 'purple' ? 'text-purple-500' :
-                                        action.color === 'orange' ? 'text-orange-500' :
-                                            action.color === 'pink' ? 'text-pink-500' :
-                                                action.color === 'teal' ? 'text-teal-500' :
-                                                    action.color === 'red' ? 'text-red-500' :
-                                                        'text-gray-500'
+                        <action.icon className={`w-6 h-6 ${action.color === 'blue' ? 'text-blue-500' :
+                            action.color === 'green' ? 'text-green-500' :
+                                action.color === 'purple' ? 'text-purple-500' :
+                                    action.color === 'orange' ? 'text-orange-500' :
+                                        action.color === 'pink' ? 'text-pink-500' :
+                                            action.color === 'teal' ? 'text-teal-500' :
+                                                action.color === 'red' ? 'text-red-500' :
+                                                    'text-gray-500'
                         }`} />
                         <span className={`text-xs ${dark ? 'text-white/70' : 'text-gray-700'}`}>
                             {action.label}
@@ -2257,18 +2246,15 @@ const AppointmentCalendar = ({ dark }) => {
                         {selectedDate.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
                     </h2>
                     <div className="flex items-center space-x-1">
-                        <button className={`p-2 rounded-lg ${
-                            dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                        <button className={`p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
                         }`}>
                             <ChevronLeft className="w-5 h-5" />
                         </button>
-                        <button className={`px-3 py-1 rounded-lg text-sm ${
-                            dark ? 'bg-white/10' : 'bg-gray-100'
+                        <button className={`px-3 py-1 rounded-lg text-sm ${dark ? 'bg-white/10' : 'bg-gray-100'
                         }`}>
                             Heute
                         </button>
-                        <button className={`p-2 rounded-lg ${
-                            dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
+                        <button className={`p-2 rounded-lg ${dark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
                         }`}>
                             <ChevronRight className="w-5 h-5" />
                         </button>
@@ -2280,10 +2266,9 @@ const AppointmentCalendar = ({ dark }) => {
                             <button
                                 key={mode}
                                 onClick={() => setViewMode(mode)}
-                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                                    viewMode === mode
-                                        ? dark ? 'bg-white text-black' : 'bg-white text-gray-900 shadow-sm'
-                                        : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === mode
+                                    ? dark ? 'bg-white text-black' : 'bg-white text-gray-900 shadow-sm'
+                                    : dark ? 'text-white/70 hover:text-white' : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             >
                                 {mode === 'day' ? 'Tag' : mode === 'week' ? 'Woche' : 'Monat'}
@@ -2308,3 +2293,79 @@ const AppointmentCalendar = ({ dark }) => {
         </div>
     );
 };
+
+const ProfessionalSalonDashboard = () => {
+    const [dark, setDarkMode] = useState(true);
+    const [collapsed, setCollapsed] = useState(false);
+    const [activeView, setActiveView] = useState('overview');
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    useEffect(() => {
+        if (dark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [dark]);
+
+    const titles = {
+        overview: { title: 'Übersicht', subtitle: 'Willkommen zurück, Max!' },
+        appointments: { title: 'Terminkalender', subtitle: 'Verwalte deine Buchungen' },
+        customers: { title: 'Kunden', subtitle: 'Alle deine Kunden auf einen Blick' },
+        services: { title: 'Services', subtitle: 'Verwalte deine angebotenen Dienstleistungen' },
+        inventory: { title: 'Inventar', subtitle: 'Behalte den Überblick über deine Produkte' },
+        analytics: { title: 'Analytics', subtitle: 'Detaillierte Einblicke in dein Geschäft' },
+        team: { title: 'Team', subtitle: 'Verwalte deine Mitarbeiter' }
+    };
+
+    const renderActiveView = () => {
+        switch (activeView) {
+            case 'overview':
+                return <OverviewDashboard dark={dark} />;
+            case 'services':
+                return <ServicesManagement dark={dark} />;
+            case 'inventory':
+                return <InventoryManagement dark={dark} />;
+            case 'analytics':
+                return <AnalyticsReporting dark={dark} />;
+            case 'team':
+                return <TeamManagement dark={dark} />;
+            case 'appointments':
+                return <AppointmentCalendar dark={dark} />;
+            default:
+                return <OverviewDashboard dark={dark} />;
+        }
+    };
+
+
+    return (
+        <div className={`min-h-screen font-sans transition-colors duration-300 ${dark ? 'bg-black text-white/90' : 'bg-gray-50 text-gray-900'}`}>
+            <Sidebar
+                dark={dark}
+                collapsed={collapsed}
+                setCollapsed={setCollapsed}
+                activeView={activeView}
+                setActiveView={setActiveView}
+            />
+
+            <div className={`transition-all duration-300 ${collapsed ? 'lg:pl-20' : 'lg:pl-72'}`}>
+                <Header
+                    dark={dark}
+                    setDarkMode={setDarkMode}
+                    title={titles[activeView]?.title || 'Dashboard'}
+                    subtitle={titles[activeView]?.subtitle}
+                    showNotifications={showNotifications}
+                    setShowNotifications={setShowNotifications}
+                    notificationCount={5}
+                />
+
+                <main className="p-4 md:p-8">
+                    {renderActiveView()}
+                </main>
+            </div>
+            <MobileNav activeView={activeView} setActiveView={setActiveView} dark={dark} />
+        </div>
+    );
+};
+
+export default ProfessionalSalonDashboard;

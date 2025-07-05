@@ -2291,3 +2291,20 @@ const AppointmentCalendar = ({ dark }) => {
                         ))}
                     </div>
                     <button
+                        onClick={() => setShowAddModal(true)}
+                        className={`
+                            px-4 py-2 rounded-lg font-medium transition-all
+                            ${dark
+                            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700'
+                            : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600'
+                        }
+                        `}
+                    >
+                        <Plus className="w-4 h-4 inline mr-2" />
+                        Termin
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};

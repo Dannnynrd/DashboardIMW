@@ -1,23 +1,23 @@
 // src/Dashboard.jsx
 import React, { useState } from 'react';
 
-// Importiere die neuen, aufgeteilten "View"-Komponenten
-import OverviewDashboard from './views/OverviewDashboard';
-import AppointmentsView from './views/AppointmentsView';
-import CustomerList from './views/CustomerList';
-import ServicesManagement from './views/ServicesManagement';
-import FinancialDetails from './views/FinancialDetails';
-import AnalyticsDashboard from './views/AnalyticsDashboard';
-import MarketingDashboard from './views/MarketingDashboard';
+// KORRIGIERT: Importiere die neuen, aufgeteilten "View"-Komponenten mit .jsx
+import OverviewDashboard from './views/OverviewDashboard.jsx';
+import AppointmentsView from './views/AppointmentsView.jsx';
+import CustomerList from './views/CustomerList.jsx';
+import ServicesManagement from './views/ServicesManagement.jsx';
+import FinancialDetails from './views/FinancialDetails.jsx';
+import AnalyticsDashboard from './views/AnalyticsDashboard.jsx';
+import MarketingDashboard from './views/MarketingDashboard.jsx';
 
-// Importiere die restlichen Komponenten
-import AIAssistant from './components/ai/AIAssistant';
+// KORRIGIERT: Importiere die restlichen Komponenten mit .jsx
+import AIAssistant from './components/ai/AIAssistant.jsx';
 
-// Importiere die Icons aus der zentralen Datei
+// KORRIGIERT: Importiere die Icons aus der zentralen Datei mit .jsx
 import {
     LayoutDashboard, Calendar, Users, Scissors, CreditCard, Receipt, BarChart3,
-    Sparkles, Share2, Brain, Menu, Settings, LogOut, Sun, Moon, Bell, Search
-} from './lib/icons';
+    Sparkles, Share2, Brain, Menu, Settings, LogOut, Sun, Moon, Bell, Search, X
+} from './lib/icons.jsx';
 
 // Der Name der Funktion muss mit dem Export übereinstimmen
 export default function ProfessionalSalonDashboard() {
